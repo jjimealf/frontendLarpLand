@@ -1,7 +1,6 @@
 // ignore_for_file: deprecated_member_use, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-
 import 'package:larpland/model/user.dart';
 import 'package:larpland/service/register.dart';
 
@@ -18,6 +17,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   // Form Key
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _obscurePassword = true;
 
   // TextForm Controller
   TextEditingController nameController = TextEditingController();
@@ -27,40 +27,45 @@ class _RegisterScreenState extends State<RegisterScreen> {
   // Form Validation
   bool _validateAndSave() {
     final form = _formKey.currentState;
-    if (form!.validate()) {
+    if (form != null && form.validate()) {
       form.save();
       return true;
     }
     return false;
   }
 
-  void _validateAndSubmit() async {
+  Future<void> _validateAndSubmit() async {
     if (_validateAndSave()) {
       try {
-      futureRegister = register(
-          nameController.text, emailController.text, passwordController.text);
-        // Registration successful
+        futureRegister = register(
+          nameController.text,
+          emailController.text,
+          passwordController.text,
+        );
+        await futureRegister;
+        if (!mounted) return;
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Registro Exitoso'),
-            content: const Text('Ahora puede iniciar sesión'),
+            title: const Text('Registro exitoso'),
+            content: const Text('Ahora puedes iniciar sesion'),
             actions: [
               TextButton(
-                onPressed: () => Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const RegisterScreen())),
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
                 child: const Text('OK'),
               ),
             ],
           ),
         );
-      } catch (e){
+      } catch (e) {
+        if (!mounted) return;
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('error'),
+            title: const Text('Error'),
             content: Text(e.toString()),
             actions: [
               TextButton(
@@ -75,68 +80,198 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        return Future.value(false);
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: const Text('Registro'),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
-          )
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF1D3557), Color(0xFF457B9D), Color(0xFFA8DADC)],
+          ),
         ),
-        body: Container(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                TextFormField(
-                  controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Nombre'),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Por favor, ingrese su nombre';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) => nameController.text = value!,
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 420),
+                child: Card(
+                  elevation: 10,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: IconButton(
+                              onPressed: () => Navigator.pop(context),
+                              icon: const Icon(Icons.arrow_back),
+                            ),
+                          ),
+                          const Icon(
+                            Icons.person_add_alt_1_outlined,
+                            size: 48,
+                            color: Color(0xFF1D3557),
+                          ),
+                          const SizedBox(height: 12),
+                          const Text(
+                            'Crea tu cuenta',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF1D3557),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          const Text(
+                            'Registrate para empezar',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.black54),
+                          ),
+                          const SizedBox(height: 24),
+                          TextFormField(
+                            controller: nameController,
+                            enabled: true,
+                            readOnly: false,
+                            autocorrect: false,
+                            enableSuggestions: false,
+                            enableInteractiveSelection: true,
+                            showCursor: true,
+                            cursorOpacityAnimates: false,
+                            canRequestFocus: true,
+                            scrollPhysics: const ClampingScrollPhysics(),
+                            maxLines: 1,
+                            decoration: InputDecoration(
+                              labelText: 'Nombre',
+                              prefixIcon: const Icon(Icons.person_outline),
+                              filled: true,
+                              fillColor: const Color(0xFFF1F5F9),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Por favor, ingrese su nombre';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) => nameController.text = value ?? '',
+                          ),
+                          const SizedBox(height: 14),
+                          TextFormField(
+                            controller: emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            enabled: true,
+                            readOnly: false,
+                            autocorrect: false,
+                            enableSuggestions: false,
+                            enableInteractiveSelection: true,
+                            showCursor: true,
+                            cursorOpacityAnimates: false,
+                            canRequestFocus: true,
+                            scrollPhysics: const ClampingScrollPhysics(),
+                            maxLines: 1,
+                            decoration: InputDecoration(
+                              labelText: 'Email',
+                              prefixIcon: const Icon(Icons.alternate_email),
+                              filled: true,
+                              fillColor: const Color(0xFFF1F5F9),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Por favor, ingrese su correo electronico';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) => emailController.text = value ?? '',
+                          ),
+                          const SizedBox(height: 14),
+                          TextFormField(
+                            controller: passwordController,
+                            enabled: true,
+                            readOnly: false,
+                            obscureText: _obscurePassword,
+                            autocorrect: false,
+                            enableSuggestions: false,
+                            enableInteractiveSelection: true,
+                            showCursor: true,
+                            cursorOpacityAnimates: false,
+                            canRequestFocus: true,
+                            scrollPhysics: const ClampingScrollPhysics(),
+                            maxLines: 1,
+                            decoration: InputDecoration(
+                              labelText: 'Contrasena',
+                              prefixIcon: const Icon(Icons.lock_outline),
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
+                              ),
+                              filled: true,
+                              fillColor: const Color(0xFFF1F5F9),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Por favor, ingrese su contrasena';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) =>
+                                passwordController.text = value ?? '',
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton.icon(
+                            onPressed: _validateAndSubmit,
+                            icon: const Icon(Icons.app_registration),
+                            label: const Text('Registrarme'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF1D3557),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-                TextFormField(
-                  controller: emailController,
-                  decoration: const InputDecoration(labelText: 'Email'),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Por favor, ingrese su correo electrónico';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) => emailController.text = value!,
-                ),
-                const SizedBox(height: 16.0),
-                TextFormField(
-                  controller: passwordController,
-                  decoration: const InputDecoration(labelText: 'Password'),
-                  obscureText: true,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Por favor, ingrese su contraseña';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) => passwordController.text = value!,
-                ),
-                const SizedBox(height: 16.0),
-                ElevatedButton(
-                  onPressed: _validateAndSubmit,
-                  child: const Text('Registrarse'),
-                ),
-              ],
+              ),
             ),
           ),
         ),
