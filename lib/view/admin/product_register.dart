@@ -54,42 +54,62 @@ class _AddProductScreenState extends State<AddProductScreen> {
     if (_validateAndSave()) {
       try {
         if (widget.product == null) {
-        futureProduct = addProduct(
-          nameController.text,
-          descriptionController.text,
-          priceController.text,
-          int.parse(stockController.text),
-          categoryController.text,
-          image!,
-        );
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Producto Agregado'),
-            content: const Text('El producto ha sido agregado exitosamente'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AddProductScreen(),
+          if (image == null) {
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Imagen requerida'),
+                content: const Text('Selecciona una imagen antes de guardar.'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('OK'),
                   ),
-                ),
-                child: const Text('OK'),
+                ],
               ),
-            ],
-          ),
-        );
+            );
+            return;
+          }
+
+          futureProduct = addProduct(
+            nameController.text,
+            descriptionController.text,
+            priceController.text,
+            int.parse(stockController.text),
+            categoryController.text,
+            image!,
+          );
+          await futureProduct;
+          if (!mounted) return;
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Producto Agregado'),
+              content: const Text('El producto ha sido agregado exitosamente'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AddProductScreen(),
+                    ),
+                  ),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
         } else {
-           updateProduct(
+          await updateProduct(
             widget.product!.id,
             name: nameController.text,
             descripcion: descriptionController.text,
             precio: priceController.text,
-            stock: stockController.text as int,
+            stock: int.parse(stockController.text),
             categoria: categoryController.text,
             imagen: image,
           );
+          if (!mounted) return;
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
@@ -105,6 +125,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
           );
         }
       } catch (e) {
+        if (!mounted) return;
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -120,6 +141,16 @@ class _AddProductScreenState extends State<AddProductScreen> {
         );
       }
     }
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    descriptionController.dispose();
+    priceController.dispose();
+    stockController.dispose();
+    categoryController.dispose();
+    super.dispose();
   }
 
   @override

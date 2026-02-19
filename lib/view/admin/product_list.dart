@@ -40,7 +40,7 @@ class _ProductListState extends State<ProductList> {
                                 : snapshot.data![index].cantidad >= 3
                                     ? Colors.yellow
                                     : Colors.red, )),
-                    trailing: IconButton(icon: Icon(Icons.edit), onPressed: () {
+                    trailing: IconButton(icon: const Icon(Icons.edit), onPressed: () {
                       Navigator.push(context, MaterialPageRoute(builder: (context) => AddProductScreen(product: snapshot.data![index])));
                     }),
                   );

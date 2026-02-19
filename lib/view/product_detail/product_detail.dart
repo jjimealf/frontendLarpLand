@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:larpland/component/review_card.dart';
 import 'package:larpland/model/product.dart';
@@ -9,6 +8,7 @@ import 'package:larpland/service/user_review.dart';
 class ProductDetail extends StatefulWidget {
   final Product product;
   final int userId;
+
   const ProductDetail({super.key, required this.product, required this.userId});
 
   @override
@@ -29,6 +29,12 @@ class _ProductDetailState extends State<ProductDetail> {
   }
 
   @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -41,7 +47,7 @@ class _ProductDetailState extends State<ProductDetail> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
-                  "https://mongoose-hip-lark.ngrok-free.app/storage/img/${widget.product.imagen.split('/').last}",
+                  'https://mongoose-hip-lark.ngrok-free.app/storage/img/${widget.product.imagen.split('/').last}',
                   fit: BoxFit.cover,
                   height: 150,
                 ),
@@ -49,9 +55,8 @@ class _ProductDetailState extends State<ProductDetail> {
               Text(widget.product.nombre),
               Text(widget.product.precio),
               Text(widget.product.valoracionTotal),
-              
               const Text(
-                "Comentarios y Valoraciones",
+                'Comentarios y Valoraciones',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               FutureBuilder<List<ProductReviews>>(
@@ -77,7 +82,7 @@ class _ProductDetailState extends State<ProductDetail> {
               ),
               const Divider(height: 32, thickness: 2),
               const Text(
-                "Añade una reseña",
+                'Anade una resena',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               Form(
@@ -97,9 +102,9 @@ class _ProductDetailState extends State<ProductDetail> {
                       },
                     ),
                     const SizedBox(height: 8),
-                    const Text("Valoración"),
+                    const Text('Valoracion'),
                     DropdownButtonFormField<int>(
-                      value: _rating,
+                      initialValue: _rating,
                       items: List.generate(5, (index) => index + 1)
                           .map((rating) => DropdownMenuItem<int>(
                                 value: rating,
@@ -115,7 +120,7 @@ class _ProductDetailState extends State<ProductDetail> {
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: _addReview,
-                      child: const Text('Enviar reseña'),
+                      child: const Text('Enviar resena'),
                     ),
                   ],
                 ),
@@ -128,40 +133,53 @@ class _ProductDetailState extends State<ProductDetail> {
   }
 
   void _addReview() {
-    if (_formKey.currentState!.validate()) {
-      futureProductReviews.then((review) {
-        if (review.any((element) => element.userId == widget.userId)) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Ya has enviado una reseña.')),
-          );
-        } else {
-          _formKey.currentState!.save();
-          setState(() {
-            try {
-              addProductReview(widget.userId, widget.product.id,
-                  _commentController.text, _rating);
-            } catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(e.toString())),
-              );
-            }
-            _calculateAverageRating();
-          });
-          _formKey.currentState!.reset();
-        }
-      });
-    }
+    _submitReview();
   }
-  
-  void _calculateAverageRating() {
-    futureProductReviews.then((reviews) {
-      if (reviews.isNotEmpty) {
-        setState(() {
-          updateProduct(widget.product.id, valoracionTotal: (reviews.fold(0, (sum, item) => sum + item.rating) / reviews.length).toString());
-        });
-      }else{
+
+  Future<void> _submitReview() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    try {
+      final reviews = await futureProductReviews;
+      if (reviews.any((element) => element.userId == widget.userId)) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Ya has enviado una resena.')),
+        );
         return;
       }
-    });
+
+      await addProductReview(
+        widget.userId,
+        widget.product.id,
+        _commentController.text,
+        _rating,
+      );
+
+      final updatedReviews = await fetchProductReviewsById(widget.product.id);
+      await _calculateAverageRating(updatedReviews);
+
+      if (!mounted) return;
+      setState(() {
+        futureProductReviews = Future.value(updatedReviews);
+      });
+      _commentController.clear();
+      _formKey.currentState!.reset();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
+  }
+
+  Future<void> _calculateAverageRating(List<ProductReviews> reviews) async {
+    if (reviews.isEmpty) return;
+    final average =
+        reviews.fold(0, (sum, item) => sum + item.rating) / reviews.length;
+    await updateProduct(
+      widget.product.id,
+      valoracionTotal: average.toString(),
+    );
   }
 }

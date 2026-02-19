@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously, deprecated_member_use
 
 import 'package:flutter/material.dart';
-import 'package:larpland/model/login.dart';
 import 'package:larpland/service/login.dart';
 import 'package:larpland/view/admin/adminhome.dart';
 import 'package:larpland/view/home/home_screen.dart';
@@ -15,9 +14,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  // server response
-  late Future<Login> futureLogin;
-
   // Form Key
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -35,17 +31,17 @@ class _LoginScreenState extends State<LoginScreen> {
     return false;
   }
 
-  void _validateAndSubmit() async {
+  Future<void> _validateAndSubmit() async {
     if (_validateAndSave()) {
       try {
-        futureLogin = login(emailController.text, passwordController.text);
-        var futureResult = await futureLogin;
-        if ((await futureLogin).rol == 0) {
+        final futureResult = await login(emailController.text, passwordController.text);
+        if (!mounted) return;
+        if (futureResult.rol == 0) {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => HomeScreen(userId: futureResult.userId)),
           );
-        } else if ((await futureLogin).rol == 1) {
+        } else if (futureResult.rol == 1) {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const AdminHome()),
@@ -68,6 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         }
       } catch (e) {
+        if (!mounted) return;
         // Show error message
         showDialog(
           context: context,
@@ -84,6 +81,13 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     }
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 
   @override

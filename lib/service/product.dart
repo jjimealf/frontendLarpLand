@@ -19,25 +19,29 @@ Future<List<Product>> fetchProductList() async {
 
 Future<Product> addProduct(String name, String descripcion, String precio,
     int stock, String categoria, File imagen) async {
-      var stream = http.ByteStream(DelegatingStream.typed(imagen.openRead()));
+  // ignore: deprecated_member_use
+  var stream = http.ByteStream(DelegatingStream.typed(imagen.openRead()));
   var length = await imagen.length();
   var multipartFile = http.MultipartFile('file', stream, length,
       filename: basename(imagen.path));
-  final response = await http.post(
+  final request = http.MultipartRequest(
+    'POST',
     Uri.parse('https://mongoose-hip-lark.ngrok-free.app/api/products'),
-    body: {
-      'nombre': name,
-      'descripcion': descripcion,
-      'precio': precio,
-      'cantidad': stock.toString(),
-      'categoria': categoria,
-      'imagen': multipartFile,
-    },
-  );
-  if (response.statusCode == 200) {
-    return Product.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  )
+    ..fields['nombre'] = name
+    ..fields['descripcion'] = descripcion
+    ..fields['precio'] = precio
+    ..fields['cantidad'] = stock.toString()
+    ..fields['categoria'] = categoria
+    ..files.add(multipartFile);
+
+  final streamedResponse = await request.send();
+  final responseBody = await streamedResponse.stream.bytesToString();
+
+  if (streamedResponse.statusCode == 200) {
+    return Product.fromJson(jsonDecode(responseBody) as Map<String, dynamic>);
   } else {
-    throw HttpException('${response.reasonPhrase}');
+    throw HttpException('Fallo al agregar producto (${streamedResponse.statusCode})');
   }
 }
 
@@ -50,32 +54,36 @@ Future<void> updateProduct(int id,
     String? categoria,
     File? imagen}) async {
 
-      Map<String, dynamic> body = {};
-      if (name != null) {
-        body['nombre'] = name;
-      }
-      if (descripcion != null) {
-        body['descripcion'] = descripcion;
-      }
-      if (precio != null) {
-        body['precio'] = precio;
-      }
-      if (stock != null) {
-        body['cantidad'] = stock.toString();
-      }
-      if (categoria != null) {
-        body['categoria'] = categoria;
-      }
-      if (imagen != null) {
-        body['imagen'] = imagen.toString();
-      }
-      if (valoracionTotal != null) {
-        body['valoracion_total'] = valoracionTotal;
-      }
+  Map<String, dynamic> body = {};
+  if (name != null) {
+    body['nombre'] = name;
+  }
+  if (descripcion != null) {
+    body['descripcion'] = descripcion;
+  }
+  if (precio != null) {
+    body['precio'] = precio;
+  }
+  if (stock != null) {
+    body['cantidad'] = stock.toString();
+  }
+  if (categoria != null) {
+    body['categoria'] = categoria;
+  }
+  if (imagen != null) {
+    body['imagen'] = imagen.toString();
+  }
+  if (valoracionTotal != null) {
+    body['valoracion_total'] = valoracionTotal;
+  }
 
 
   final response = await http.put(
     Uri.parse('https://mongoose-hip-lark.ngrok-free.app/api/products/$id'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
     body: jsonEncode(body),
   );
   if (response.statusCode != 200) {
