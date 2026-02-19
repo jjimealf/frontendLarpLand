@@ -24,28 +24,58 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-          automaticallyImplyLeading: false,
-          leading: IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => Navigator.pop(context),
-          )),
+        automaticallyImplyLeading: false,
+        elevation: 0,
+        centerTitle: true,
+        backgroundColor: const Color(0xFF1D3557),
+        foregroundColor: Colors.white,
+        title: const Text(
+          'LarpLand',
+          style: TextStyle(fontWeight: FontWeight.w700),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.logout),
+          tooltip: 'Cerrar sesion',
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: IndexedStack(
         index: selectedIndex,
         children: screen,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: selectedIndex,
-        onTap: (value) => setState(() => selectedIndex = value),
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.inventory),
-            label: 'Productos',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.event),
-            label: 'Eventos',
-          ),
-        ],
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Color(0xFF1D3557),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 12,
+              offset: Offset(0, -2),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: selectedIndex,
+          onTap: (value) => setState(() => selectedIndex = value),
+          type: BottomNavigationBarType.fixed,
+          elevation: 0,
+          backgroundColor: const Color(0xFF1D3557),
+          selectedItemColor: const Color(0xFFA8DADC),
+          unselectedItemColor: Colors.white70,
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.inventory_2_outlined),
+              activeIcon: Icon(Icons.inventory_2),
+              label: 'Productos',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.event_outlined),
+              activeIcon: Icon(Icons.event),
+              label: 'Eventos',
+            ),
+          ],
+        ),
       ),
     );
   }
