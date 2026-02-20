@@ -1,3 +1,5 @@
+﻿import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:larpland/model/roleplay_event.dart';
@@ -13,21 +15,34 @@ class EventPage extends StatefulWidget {
 class _EventPageState extends State<EventPage> {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+  final List<Timer> _notificationTimers = <Timer>[];
   late Future<List<RoleplayEvent>> futureEvents;
 
   @override
   void initState() {
     super.initState();
     futureEvents = fetchEventList();
-    flutterLocalNotificationsPlugin
+    unawaited(_bootstrapNotifications());
+  }
+
+  @override
+  void dispose() {
+    for (final timer in _notificationTimers) {
+      timer.cancel();
+    }
+    super.dispose();
+  }
+
+  Future<void> _bootstrapNotifications() async {
+    await flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
-    initializeNotifications();
-    scheduleEventNotifications();
+    await initializeNotifications();
+    await scheduleEventNotifications();
   }
 
-  void initializeNotifications() async {
+  Future<void> initializeNotifications() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
@@ -37,36 +52,48 @@ class _EventPageState extends State<EventPage> {
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
-  Future onDidReceiveLocalNotification(
-      int id, String? title, String? body, String? payload) async {
-    // Manejar notificación en primer plano
+  Future<void> onDidReceiveLocalNotification(
+    int id,
+    String? title,
+    String? body,
+    String? payload,
+  ) async {
+    // Manejar notificacion en primer plano
   }
 
-  Future onSelectNotification(String? payload) async {
-    // Manejar acción de selección de notificación
+  Future<void> onSelectNotification(String? payload) async {
+    // Manejar accion de seleccion de notificacion
   }
 
-  void scheduleEventNotifications() async {
+  Future<void> scheduleEventNotifications() async {
     final now = DateTime.now();
     final events = await futureEvents;
-    for (var event in events) {
-      final eventDate = DateTime.parse(event.fechaInicio);
-      if (eventDate.isAfter(now) && eventDate.difference(now).inHours <= 24) {
-        scheduleNotification(event);
+
+    for (final event in events) {
+      final eventDate = DateTime.tryParse(event.fechaInicio);
+      if (eventDate == null) {
+        continue;
+      }
+
+      final remaining = eventDate.difference(now);
+      if (remaining > Duration.zero && remaining <= const Duration(hours: 24)) {
+        _notificationTimers.add(
+          Timer(remaining, () => unawaited(scheduleNotification(event))),
+        );
       }
     }
   }
 
-  void scheduleNotification(RoleplayEvent event) async {
+  Future<void> scheduleNotification(RoleplayEvent event) async {
     await flutterLocalNotificationsPlugin.show(
       event.id,
       event.name,
       event.fechaInicio,
       const NotificationDetails(
         android: AndroidNotificationDetails(
-          'channel id',
-          'channel name',
-          channelDescription: 'channel description',
+          'event_channel_id',
+          'Eventos',
+          channelDescription: 'Notificaciones de eventos cercanos',
           importance: Importance.max,
           priority: Priority.high,
           ticker: 'ticker',
@@ -80,43 +107,44 @@ class _EventPageState extends State<EventPage> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text("Eventos"),
+        title: const Text('Eventos'),
       ),
       body: FutureBuilder<List<RoleplayEvent>>(
         future: futureEvents,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return ListView.builder(
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  final event = snapshot.data![index];
-                  return Card(
-                    child: ListTile(
-                      title: Text(event.name),
-                      subtitle: Text(
-                          "${event.description}\nFecha: ${event.fechaInicio} - ${event.fechaFin}"),
-                      trailing: ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            if (event.isRegistered) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          "Ya estás inscrito en este evento")));
-                            } else {
-                              event.isRegistered = true;
-                            }
-                          });
-                        },
-                        child: Text(
-                            event.isRegistered ? "Inscrito" : "Inscribirse"),
-                      ),
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                final event = snapshot.data![index];
+                return Card(
+                  child: ListTile(
+                    title: Text(event.name),
+                    subtitle: Text(
+                      '${event.description}\nFecha: ${event.fechaInicio} - ${event.fechaFin}',
                     ),
-                  );
-                });
+                    trailing: ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          if (event.isRegistered) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Ya estas inscrito en este evento'),
+                              ),
+                            );
+                          } else {
+                            event.isRegistered = true;
+                          }
+                        });
+                      },
+                      child: Text(event.isRegistered ? 'Inscrito' : 'Inscribirse'),
+                    ),
+                  ),
+                );
+              },
+            );
           } else if (snapshot.hasError) {
-            return Center(
-              child: Text("${snapshot.error}"));
+            return Center(child: Text('${snapshot.error}'));
           }
           return const Center(
             child: CircularProgressIndicator(),
