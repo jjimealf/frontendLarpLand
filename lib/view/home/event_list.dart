@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:larpland/component/event_card.dart';
 import 'package:larpland/model/roleplay_event.dart';
 import 'package:larpland/service/roleplay_event.dart';
 
@@ -114,30 +115,39 @@ class _EventPageState extends State<EventPage> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return ListView.builder(
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 24),
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final event = snapshot.data![index];
-                return Card(
-                  child: ListTile(
-                    title: Text(event.name),
-                    subtitle: Text(
-                      '${event.description}\nFecha: ${event.fechaInicio} - ${event.fechaFin}',
+                return EventCard(
+                  event: event,
+                  margin: const EdgeInsets.only(bottom: 10),
+                  trailingAction: ElevatedButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        if (event.isRegistered) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Ya estas inscrito en este evento'),
+                            ),
+                          );
+                        } else {
+                          event.isRegistered = true;
+                        }
+                      });
+                    },
+                    icon: Icon(
+                      event.isRegistered
+                          ? Icons.verified_outlined
+                          : Icons.app_registration_outlined,
+                      size: 18,
                     ),
-                    trailing: ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          if (event.isRegistered) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Ya estas inscrito en este evento'),
-                              ),
-                            );
-                          } else {
-                            event.isRegistered = true;
-                          }
-                        });
-                      },
-                      child: Text(event.isRegistered ? 'Inscrito' : 'Inscribirse'),
+                    label: Text(
+                      event.isRegistered ? 'Inscrito' : 'Inscribirse',
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF1D3557),
+                      foregroundColor: Colors.white,
                     ),
                   ),
                 );

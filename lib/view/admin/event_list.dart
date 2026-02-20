@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:larpland/component/event_card.dart';
 import 'package:larpland/model/roleplay_event.dart';
 import 'package:larpland/service/roleplay_event.dart';
 import 'package:larpland/view/admin/event_register.dart';
@@ -34,49 +35,13 @@ class _EventScreenState extends State<EventScreen> {
                 );
               }
               return ListView.builder(
-                padding: const EdgeInsets.all(14),
+                padding: const EdgeInsets.fromLTRB(14, 14, 14, 92),
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
                   final event = snapshot.data![index];
-                  return Card(
+                  return EventCard(
+                    event: event,
                     margin: const EdgeInsets.only(bottom: 10),
-                    elevation: 0,
-                    color: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      side: BorderSide(
-                        color: Colors.blueGrey.withValues(alpha: 0.15),
-                      ),
-                    ),
-                    child: ListTile(
-                      leading: Container(
-                        width: 38,
-                        height: 38,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFEAF2F8),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Icon(
-                          Icons.event_available_outlined,
-                          color: Color(0xFF1D3557),
-                        ),
-                      ),
-                      title: Text(
-                        event.name,
-                        style: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      subtitle: Text(
-                        'Inicio: ${event.fechaInicio}',
-                        style: const TextStyle(color: Colors.black54),
-                      ),
-                      trailing: Text(
-                        'Fin: ${event.fechaFin}',
-                        style: const TextStyle(
-                          color: Color(0xFF1D3557),
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
                   );
                 },
               );
@@ -95,10 +60,17 @@ class _EventScreenState extends State<EventScreen> {
           bottom: 16,
           right: 16,
           child: FloatingActionButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const AddEventScreen()),
-            ),
+            onPressed: () async {
+              final changed = await Navigator.push<bool>(
+                context,
+                MaterialPageRoute(builder: (context) => const AddEventScreen()),
+              );
+              if (changed == true && mounted) {
+                setState(() {
+                  eventList = fetchEventList();
+                });
+              }
+            },
             backgroundColor: const Color(0xFF1D3557),
             foregroundColor: Colors.white,
             tooltip: 'Agregar evento',
@@ -109,6 +81,7 @@ class _EventScreenState extends State<EventScreen> {
       ],
     );
   }
+
 }
 
 class _EmptyState extends StatelessWidget {

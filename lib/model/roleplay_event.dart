@@ -1,4 +1,3 @@
-
 class RoleplayEvent {
   final int id;
   final String name;
@@ -17,23 +16,44 @@ class RoleplayEvent {
   });
 
   factory RoleplayEvent.fromJson(Map<String, dynamic> json) {
-        return switch (json) {
-          {
-            'id': int id,
-            'nombre': String name,
-            'descripcion': String description,
-            'fecha_inicio': String fechaInicio,
-            'fecha_fin': String fechaFin,
-          } =>
-            RoleplayEvent(
-              id: id,
-              name: name,
-              description: description,
-              fechaInicio: fechaInicio,
-              fechaFin: fechaFin,
-            ),
-          _ => throw const FormatException('Fallo al cargar evento'),
+    final id = _asInt(json['id']);
+    final name = _asString(json['nombre'] ?? json['name']);
+    final description = _asString(json['descripcion'] ?? json['description']);
+    final fechaInicio = _asString(json['fecha_inicio'] ?? json['fechaInicio']);
+    final fechaFin = _asString(json['fecha_fin'] ?? json['fechaFin']);
 
-        };     
+    if (id == null ||
+        name == null ||
+        description == null ||
+        fechaInicio == null ||
+        fechaFin == null) {
+      throw const FormatException('Fallo al cargar evento');
     }
+
+    return RoleplayEvent(
+      id: id,
+      name: name,
+      description: description,
+      fechaInicio: fechaInicio,
+      fechaFin: fechaFin,
+    );
+  }
+}
+
+int? _asInt(dynamic value) {
+  return switch (value) {
+    int v => v,
+    num v => v.toInt(),
+    String v => int.tryParse(v),
+    _ => null,
+  };
+}
+
+String? _asString(dynamic value) {
+  return switch (value) {
+    String v => v,
+    num v => v.toString(),
+    bool v => v.toString(),
+    _ => null,
+  };
 }

@@ -69,9 +69,21 @@ List<dynamic> _extractEventList(dynamic decoded) {
     if (data is List) {
       return data;
     }
+    if (data is Map<String, dynamic>) {
+      final nested = _extractEventList(data);
+      if (nested.isNotEmpty) {
+        return nested;
+      }
+    }
     final events = decoded['events'];
     if (events is List) {
       return events;
+    }
+    if (events is Map<String, dynamic>) {
+      final nested = _extractEventList(events);
+      if (nested.isNotEmpty) {
+        return nested;
+      }
     }
   }
   return const [];
