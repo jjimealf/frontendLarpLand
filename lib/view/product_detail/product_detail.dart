@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:larpland/component/review_card.dart';
+import 'package:larpland/component/smart_network_image.dart';
 import 'package:larpland/model/product.dart';
 import 'package:larpland/model/user_review.dart';
-import 'package:larpland/service/api_config.dart';
 import 'package:larpland/service/product.dart';
 import 'package:larpland/service/user_review.dart';
 
@@ -35,11 +35,6 @@ class _ProductDetailState extends State<ProductDetail> {
     super.dispose();
   }
 
-  String _productImageUrl() {
-    final fileName = widget.product.imagen.split('/').last;
-    return '${ApiConfig.baseUrl}/storage/img/$fileName';
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,10 +47,11 @@ class _ProductDetailState extends State<ProductDetail> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  _productImageUrl(),
+                child: SmartNetworkImage(
+                  imagePath: widget.product.imagen,
                   fit: BoxFit.cover,
-                  height: 150,
+                  height: 120,
+                  width: 220,
                 ),
               ),
               Text(widget.product.nombre),

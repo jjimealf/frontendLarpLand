@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:larpland/component/smart_network_image.dart';
 import 'package:larpland/model/product.dart';
 import 'package:larpland/provider/cart_provider.dart';
-import 'package:larpland/service/api_config.dart';
 import 'package:larpland/service/product.dart';
 import 'package:larpland/view/cart/cart.dart';
 import 'package:larpland/view/product_detail/product_detail.dart';
@@ -66,11 +66,6 @@ class _CatalogScreenState extends State<CatalogScreen> {
             .toList(growable: false);
       }
     });
-  }
-
-  String _productImageUrl(Product product) {
-    final fileName = product.imagen.split('/').last;
-    return '${ApiConfig.baseUrl}/storage/img/$fileName';
   }
 
   @override
@@ -143,18 +138,10 @@ class _CatalogScreenState extends State<CatalogScreen> {
                               children: [
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(8),
-                                  child: Image.network(
-                                    _productImageUrl(product),
+                                  child: SmartNetworkImage(
+                                    imagePath: product.imagen,
                                     fit: BoxFit.cover,
-                                    height: 150,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return const SizedBox(
-                                        height: 150,
-                                        child: Center(
-                                          child: Icon(Icons.broken_image),
-                                        ),
-                                      );
-                                    },
+                                    height: 110,
                                   ),
                                 ),
                                 Text(product.nombre),

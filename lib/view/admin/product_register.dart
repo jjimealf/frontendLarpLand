@@ -2,8 +2,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:larpland/component/smart_network_image.dart';
 import 'package:larpland/model/product.dart';
-import 'package:larpland/service/api_config.dart';
 import 'package:larpland/service/product.dart';
 
 class AddProductScreen extends StatefulWidget {
@@ -185,11 +185,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  String _currentProductImageUrl() {
-    final fileName = widget.product!.imagen.split('/').last;
-    return '${ApiConfig.baseUrl}/storage/img/$fileName';
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -341,20 +336,20 @@ class _AddProductScreenState extends State<AddProductScreen> {
                           ),
                           const SizedBox(height: 12),
                           if (isEditMode && imageBytes == null)
-                            ClipRRect(
+                            SmartNetworkImage(
+                              imagePath: widget.product!.imagen,
+                              height: 300,
+                              width: 300,
+                              fit: BoxFit.cover,
                               borderRadius: BorderRadius.circular(12),
-                              child: Image.network(
-                                _currentProductImageUrl(),
-                                height: 180,
-                                fit: BoxFit.cover,
-                              ),
                             ),
                           if (imageBytes != null)
                             ClipRRect(
                               borderRadius: BorderRadius.circular(12),
                               child: Image.memory(
                                 imageBytes!,
-                                height: 180,
+                                height: 300,
+                                width: 300,
                                 fit: BoxFit.cover,
                               ),
                             ),
