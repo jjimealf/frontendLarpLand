@@ -121,7 +121,41 @@ class _CatalogScreenState extends State<CatalogScreen> {
                 ),
               );
             },
-            icon: const Icon(Icons.shopping_cart_outlined),
+            icon: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Icon(
+                  cart.items.isEmpty
+                      ? Icons.shopping_cart_outlined
+                      : Icons.shopping_cart,
+                ),
+                if (cart.items.isNotEmpty)
+                  Positioned(
+                    right: -6,
+                    top: -6,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      constraints: const BoxConstraints(minWidth: 18),
+                      child: Text(
+                        '${cart.totalItemsCount}',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
             tooltip: 'Ver carrito',
           ),
         ],

@@ -81,4 +81,12 @@ class CartProvider with ChangeNotifier {
     });
     return total;
   }
+
+  int get totalItemsCount {
+    int total = 0;
+    for (final product in _items.values) {
+      total += product.cantidadCarrito;
+    }
+    return total;
+  }
 }
