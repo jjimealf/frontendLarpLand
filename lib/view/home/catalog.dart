@@ -100,6 +100,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
         ),
       ),
     );
+    await _refreshProducts();
   }
 
   @override

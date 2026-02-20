@@ -18,6 +18,7 @@ class ProductDetail extends StatefulWidget {
 
 class _ProductDetailState extends State<ProductDetail> {
   late Future<List<ProductReviews>> futureProductReviews;
+  late String _displayRatingTotal;
 
   final _formKey = GlobalKey<FormState>();
   final _commentController = TextEditingController();
@@ -28,6 +29,7 @@ class _ProductDetailState extends State<ProductDetail> {
   void initState() {
     super.initState();
     futureProductReviews = fetchProductReviewsById(widget.product.id);
+    _displayRatingTotal = widget.product.valoracionTotal;
   }
 
   @override
@@ -122,7 +124,7 @@ class _ProductDetailState extends State<ProductDetail> {
                 ),
                 _InfoChip(
                   icon: Icons.star_outline,
-                  text: 'Valoracion: ${widget.product.valoracionTotal}',
+                  text: 'Valoracion: $_displayRatingTotal',
                 ),
               ],
             ),
@@ -348,11 +350,19 @@ class _ProductDetailState extends State<ProductDetail> {
     }
     final average =
         reviews.fold(0, (sum, item) => sum + item.rating) / reviews.length;
+    final formattedAverage = average.toStringAsFixed(1);
     await updateProduct(
       widget.product.id,
-      valoracionTotal: average.toString(),
+      valoracionTotal: formattedAverage,
     );
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _displayRatingTotal = formattedAverage;
+    });
   }
+
 }
 
 class _InfoChip extends StatelessWidget {

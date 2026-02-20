@@ -87,37 +87,39 @@ Future<void> updateProduct(
     return;
   }
 
-  final Map<String, dynamic> body = {};
+  final request = http.MultipartRequest(
+    'POST',
+    Uri.parse('${ApiConfig.baseUrl}/api/products/$id'),
+  )
+    ..headers.addAll(_jsonHeaders())
+    ..fields['_method'] = 'PUT';
+
   if (name != null) {
-    body['nombre'] = name;
+    request.fields['nombre'] = name;
   }
   if (descripcion != null) {
-    body['descripcion'] = descripcion;
+    request.fields['descripcion'] = descripcion;
   }
   if (precio != null) {
-    body['precio'] = precio;
+    request.fields['precio'] = precio;
   }
   if (stock != null) {
-    body['cantidad'] = stock.toString();
+    request.fields['cantidad'] = stock.toString();
   }
   if (categoria != null) {
-    body['categoria'] = categoria;
+    request.fields['categoria'] = categoria;
   }
   if (valoracionTotal != null) {
-    body['valoracion_total'] = valoracionTotal;
+    request.fields['valoracion_total'] = valoracionTotal;
   }
 
-  final response = await http.put(
-    Uri.parse('${ApiConfig.baseUrl}/api/products/$id'),
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      ..._authHeader(),
-    },
-    body: jsonEncode(body),
-  );
-  if (response.statusCode != 200) {
-    throw Exception('Fallo al actualizar producto');
+  final streamedResponse = await request.send();
+  if (streamedResponse.statusCode != 200 &&
+      streamedResponse.statusCode != 201) {
+    final body = await streamedResponse.stream.bytesToString();
+    throw Exception(
+      'Fallo al actualizar producto (${streamedResponse.statusCode}): $body',
+    );
   }
 }
 
