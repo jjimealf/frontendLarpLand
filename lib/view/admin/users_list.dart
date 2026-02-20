@@ -25,26 +25,86 @@ class _UsersListState extends State<UsersList> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           if (snapshot.data!.isEmpty) {
-            return const Center(child: Text('Sin usuarios'));
+            return const _EmptyState(
+              icon: Icons.group_off_outlined,
+              message: 'Sin usuarios',
+            );
           }
           return ListView.builder(
+            padding: const EdgeInsets.all(14),
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
-              return ListTile(
-                title: Text(snapshot.data![index].name),
-                subtitle: Text(snapshot.data![index].email),
+              final user = snapshot.data![index];
+              return Card(
+                margin: const EdgeInsets.only(bottom: 10),
+                elevation: 0,
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  side: BorderSide(
+                    color: Colors.blueGrey.withValues(alpha: 0.15),
+                  ),
+                ),
+                child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: const Color(0xFF1D3557),
+                    child: Text(
+                      user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  title: Text(
+                    user.name,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  subtitle: Text(
+                    user.email,
+                    style: const TextStyle(color: Colors.black54),
+                  ),
+                ),
               );
             },
           );
         } else if (snapshot.hasError) {
-          return Center(
-            child: Text('Error: ${snapshot.error}'),
+          return const _EmptyState(
+            icon: Icons.error_outline,
+            message: 'No se pudieron cargar usuarios',
           );
         }
         return const Center(
           child: CircularProgressIndicator(),
         );
       },
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  final IconData icon;
+  final String message;
+
+  const _EmptyState({required this.icon, required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 40, color: const Color(0xFF457B9D)),
+          const SizedBox(height: 8),
+          Text(
+            message,
+            style: const TextStyle(
+              color: Color(0xFF1D3557),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
