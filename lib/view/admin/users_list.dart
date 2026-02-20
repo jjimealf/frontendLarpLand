@@ -3,7 +3,9 @@ import 'package:larpland/model/user.dart';
 import 'package:larpland/service/user.dart';
 
 class UsersList extends StatefulWidget {
-  const UsersList({super.key});
+  final int? excludeUserId;
+
+  const UsersList({super.key, this.excludeUserId});
 
   @override
   State<UsersList> createState() => _UsersListState();
@@ -24,7 +26,10 @@ class _UsersListState extends State<UsersList> {
       future: futureUserList,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          if (snapshot.data!.isEmpty) {
+          final users = snapshot.data!
+              .where((user) => user.id != widget.excludeUserId)
+              .toList(growable: false);
+          if (users.isEmpty) {
             return const _EmptyState(
               icon: Icons.group_off_outlined,
               message: 'Sin usuarios',
@@ -32,9 +37,9 @@ class _UsersListState extends State<UsersList> {
           }
           return ListView.builder(
             padding: const EdgeInsets.all(14),
-            itemCount: snapshot.data!.length,
+            itemCount: users.length,
             itemBuilder: (context, index) {
-              final user = snapshot.data![index];
+              final user = users[index];
               return Card(
                 margin: const EdgeInsets.only(bottom: 10),
                 elevation: 0,

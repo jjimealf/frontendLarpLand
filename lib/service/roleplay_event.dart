@@ -3,23 +3,25 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:larpland/model/roleplay_event.dart';
 import 'package:larpland/service/api_config.dart';
+import 'package:larpland/service/auth_session.dart';
 
 Future<List<RoleplayEvent>> fetchEventList() async {
-  try {
-    final response = await http.get(Uri.parse('${ApiConfig.baseUrl}/api/events'));
-    if (response.statusCode != 200) {
-      return [];
-    }
-
-    final decoded = jsonDecode(response.body);
-    final items = _extractEventList(decoded);
-    return items
-        .whereType<Map<String, dynamic>>()
-        .map(RoleplayEvent.fromJson)
-        .toList(growable: false);
-  } catch (_) {
-    return [];
+  final response = await http.get(
+    Uri.parse('${ApiConfig.baseUrl}/api/events'),
+    headers: _jsonHeaders(),
+  );
+  if (response.statusCode != 200) {
+    throw Exception(
+      'Fallo al cargar eventos (${response.statusCode}): ${response.body}',
+    );
   }
+
+  final decoded = jsonDecode(response.body);
+  final items = _extractEventList(decoded);
+  return items
+      .whereType<Map<String, dynamic>>()
+      .map(RoleplayEvent.fromJson)
+      .toList(growable: false);
 }
 
 Future<RoleplayEvent> addEvent(
@@ -30,6 +32,7 @@ Future<RoleplayEvent> addEvent(
 ) async {
   final response = await http.post(
     Uri.parse('${ApiConfig.baseUrl}/api/events'),
+    headers: _jsonHeaders(),
     body: {
       'nombre': name,
       'descripcion': description,
@@ -44,6 +47,17 @@ Future<RoleplayEvent> addEvent(
   } else {
     throw Exception('Fallo al agregar evento');
   }
+}
+
+Map<String, String> _jsonHeaders() {
+  final headers = <String, String>{
+    'Accept': 'application/json',
+  };
+  final token = AuthSession.token;
+  if (token != null && token.isNotEmpty) {
+    headers['Authorization'] = 'Bearer $token';
+  }
+  return headers;
 }
 
 List<dynamic> _extractEventList(dynamic decoded) {

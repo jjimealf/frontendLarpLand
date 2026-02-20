@@ -4,7 +4,9 @@ import 'package:larpland/view/admin/product_list.dart';
 import 'package:larpland/view/admin/users_list.dart';
 
 class AdminHome extends StatefulWidget {
-  const AdminHome({super.key});
+  final int userId;
+
+  const AdminHome({super.key, required this.userId});
 
   @override
   State<AdminHome> createState() => _AdminHomeState();
@@ -16,7 +18,7 @@ class _AdminHomeState extends State<AdminHome> {
   @override
   Widget build(BuildContext context) {
     final screens = [
-      const UsersList(),
+      UsersList(excludeUserId: widget.userId),
       const ProductList(),
       const EventScreen(),
     ];

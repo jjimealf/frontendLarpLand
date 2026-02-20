@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:larpland/model/login.dart';
 import 'package:http/http.dart' as http;
 import 'package:larpland/service/api_config.dart';
+import 'package:larpland/service/auth_session.dart';
 
 Future<Login> login(String email, String password) async {
   final response = await http.post(
@@ -20,7 +21,9 @@ Future<Login> login(String email, String password) async {
     try {
       final decoded = jsonDecode(response.body);
       if (decoded is Map<String, dynamic>) {
-        return Login.fromJson(decoded);
+        final loginResult = Login.fromJson(decoded);
+        AuthSession.token = loginResult.token;
+        return loginResult;
       }
       throw Exception('Respuesta de login no es un objeto JSON');
     } catch (e) {

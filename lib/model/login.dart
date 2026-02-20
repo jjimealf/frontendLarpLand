@@ -3,12 +3,14 @@ class Login {
   final int rol;
   final String message;
   final int userId;
+  final String? token;
 
   const Login({
     required this.status,
     required this.rol,
     required this.message,
     required this.userId,
+    this.token,
   });
 
   factory Login.fromJson(Map<String, dynamic> json) {
@@ -18,6 +20,12 @@ class Login {
     final rawRole = payload['rol'] ?? payload['role'];
     final rawMessage = payload['message'] ?? payload['msg'] ?? '';
     final rawUserId = payload['userId'] ?? payload['user_id'] ?? payload['id'];
+    final rawToken = payload['token'] ??
+        payload['access_token'] ??
+        payload['api_token'] ??
+        json['token'] ??
+        json['access_token'] ??
+        json['api_token'];
 
     final nestedUser = payload['user'];
     final nestedUserId = nestedUser is Map<String, dynamic>
@@ -38,6 +46,7 @@ class Login {
       rol: rol,
       message: message,
       userId: userId,
+      token: rawToken is String && rawToken.isNotEmpty ? rawToken : null,
     );
   }
 }

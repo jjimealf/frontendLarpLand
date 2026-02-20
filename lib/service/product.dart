@@ -5,25 +5,26 @@ import 'package:async/async.dart';
 import 'package:http/http.dart' as http;
 import 'package:larpland/model/product.dart';
 import 'package:larpland/service/api_config.dart';
+import 'package:larpland/service/auth_session.dart';
 import 'package:path/path.dart';
 
 Future<List<Product>> fetchProductList() async {
-  try {
-    final response =
-        await http.get(Uri.parse('${ApiConfig.baseUrl}/api/products'));
-    if (response.statusCode != 200) {
-      return [];
-    }
-
-    final decoded = jsonDecode(response.body);
-    final items = _extractProductList(decoded);
-    return items
-        .whereType<Map<String, dynamic>>()
-        .map(Product.fromJson)
-        .toList(growable: false);
-  } catch (_) {
-    return [];
+  final response = await http.get(
+    Uri.parse('${ApiConfig.baseUrl}/api/products'),
+    headers: _jsonHeaders(),
+  );
+  if (response.statusCode != 200) {
+    throw Exception(
+      'Fallo al cargar productos (${response.statusCode}): ${response.body}',
+    );
   }
+
+  final decoded = jsonDecode(response.body);
+  final items = _extractProductList(decoded);
+  return items
+      .whereType<Map<String, dynamic>>()
+      .map(Product.fromJson)
+      .toList(growable: false);
 }
 
 Future<Product> addProduct(String name, String descripcion, String precio,
@@ -41,6 +42,7 @@ Future<Product> addProduct(String name, String descripcion, String precio,
     'POST',
     Uri.parse('${ApiConfig.baseUrl}/api/products'),
   )
+    ..headers.addAll(_jsonHeaders())
     ..fields['nombre'] = name
     ..fields['descripcion'] = descripcion
     ..fields['precio'] = precio
@@ -98,12 +100,28 @@ Future<void> updateProduct(
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      ..._authHeader(),
     },
     body: jsonEncode(body),
   );
   if (response.statusCode != 200) {
     throw Exception('Fallo al actualizar producto');
   }
+}
+
+Map<String, String> _jsonHeaders() {
+  return {
+    'Accept': 'application/json',
+    ..._authHeader(),
+  };
+}
+
+Map<String, String> _authHeader() {
+  final token = AuthSession.token;
+  if (token == null || token.isEmpty) {
+    return const {};
+  }
+  return {'Authorization': 'Bearer $token'};
 }
 
 List<dynamic> _extractProductList(dynamic decoded) {

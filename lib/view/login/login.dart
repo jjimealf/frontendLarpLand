@@ -48,7 +48,9 @@ class _LoginScreenState extends State<LoginScreen> {
         } else if (futureResult.rol == 1) {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const AdminHome()),
+            MaterialPageRoute(
+              builder: (context) => AdminHome(userId: futureResult.userId),
+            ),
           );
         } else {
           // Login failed, show error message
