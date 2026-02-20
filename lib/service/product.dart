@@ -1,32 +1,45 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:larpland/model/product.dart';
-import 'package:http/http.dart' as http;
-import 'package:path/path.dart';
 import 'package:async/async.dart';
+import 'package:http/http.dart' as http;
+import 'package:larpland/model/product.dart';
+import 'package:larpland/service/api_config.dart';
+import 'package:path/path.dart';
 
 Future<List<Product>> fetchProductList() async {
-  final response =
-      await http.get(Uri.parse('http://127.0.0.1:8000/api/products'));
-  if (response.statusCode == 200) {
-    return List<Product>.from(
-        jsonDecode(response.body).map((product) => Product.fromJson(product)));
-  } else {
-    throw Exception('Fallo al cargar productos');
+  try {
+    final response =
+        await http.get(Uri.parse('${ApiConfig.baseUrl}/api/products'));
+    if (response.statusCode != 200) {
+      return [];
+    }
+
+    final decoded = jsonDecode(response.body);
+    final items = _extractProductList(decoded);
+    return items
+        .whereType<Map<String, dynamic>>()
+        .map(Product.fromJson)
+        .toList(growable: false);
+  } catch (_) {
+    return [];
   }
 }
 
 Future<Product> addProduct(String name, String descripcion, String precio,
     int stock, String categoria, File imagen) async {
   // ignore: deprecated_member_use
-  var stream = http.ByteStream(DelegatingStream.typed(imagen.openRead()));
-  var length = await imagen.length();
-  var multipartFile = http.MultipartFile('file', stream, length,
-      filename: basename(imagen.path));
+  final stream = http.ByteStream(DelegatingStream.typed(imagen.openRead()));
+  final length = await imagen.length();
+  final multipartFile = http.MultipartFile(
+    'file',
+    stream,
+    length,
+    filename: basename(imagen.path),
+  );
   final request = http.MultipartRequest(
     'POST',
-    Uri.parse('http://127.0.0.1:8000/api/products'),
+    Uri.parse('${ApiConfig.baseUrl}/api/products'),
   )
     ..fields['nombre'] = name
     ..fields['descripcion'] = descripcion
@@ -41,20 +54,23 @@ Future<Product> addProduct(String name, String descripcion, String precio,
   if (streamedResponse.statusCode == 200) {
     return Product.fromJson(jsonDecode(responseBody) as Map<String, dynamic>);
   } else {
-    throw HttpException('Fallo al agregar producto (${streamedResponse.statusCode})');
+    throw HttpException(
+      'Fallo al agregar producto (${streamedResponse.statusCode})',
+    );
   }
 }
 
-Future<void> updateProduct(int id,
-    {String? name,
-    String? descripcion,
-    String? precio,
-    String? valoracionTotal,
-    int? stock,
-    String? categoria,
-    File? imagen}) async {
-
-  Map<String, dynamic> body = {};
+Future<void> updateProduct(
+  int id, {
+  String? name,
+  String? descripcion,
+  String? precio,
+  String? valoracionTotal,
+  int? stock,
+  String? categoria,
+  File? imagen,
+}) async {
+  final Map<String, dynamic> body = {};
   if (name != null) {
     body['nombre'] = name;
   }
@@ -77,9 +93,8 @@ Future<void> updateProduct(int id,
     body['valoracion_total'] = valoracionTotal;
   }
 
-
   final response = await http.put(
-    Uri.parse('http://127.0.0.1:8000/api/products/$id'),
+    Uri.parse('${ApiConfig.baseUrl}/api/products/$id'),
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -89,4 +104,21 @@ Future<void> updateProduct(int id,
   if (response.statusCode != 200) {
     throw Exception('Fallo al actualizar producto');
   }
+}
+
+List<dynamic> _extractProductList(dynamic decoded) {
+  if (decoded is List) {
+    return decoded;
+  }
+  if (decoded is Map<String, dynamic>) {
+    final data = decoded['data'];
+    if (data is List) {
+      return data;
+    }
+    final products = decoded['products'];
+    if (products is List) {
+      return products;
+    }
+  }
+  return const [];
 }

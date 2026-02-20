@@ -28,6 +28,9 @@ class _ProductListState extends State<ProductList> {
           future: productList,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
+              if (snapshot.data!.isEmpty) {
+                return const Center(child: Text('Sin productos'));
+              }
               return ListView.builder(
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
