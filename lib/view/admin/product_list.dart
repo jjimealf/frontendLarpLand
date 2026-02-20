@@ -22,8 +22,7 @@ class _ProductListState extends State<ProductList> {
   }
 
   Future<void> _openProductForm({Product? product}) async {
-    final changed = await Navigator.push<bool>(
-      context,
+    final changed = await Navigator.of(context, rootNavigator: true).push<bool>(
       MaterialPageRoute(
         builder: (context) => AddProductScreen(product: product),
       ),
@@ -53,18 +52,31 @@ class _ProductListState extends State<ProductList> {
               return LayoutBuilder(
                 builder: (context, constraints) {
                   final width = constraints.maxWidth;
+                  const horizontalPadding = 14.0;
+                  const crossSpacing = 12.0;
                   final crossAxisCount = width >= 1000
                       ? 4
                       : width >= 700
                           ? 3
                           : 2;
+                  final availableWidth = width -
+                      (horizontalPadding * 2) -
+                      ((crossAxisCount - 1) * crossSpacing);
+                  final cardWidth = availableWidth / crossAxisCount;
+                  final imageHeight = (cardWidth * 0.72).clamp(96.0, 170.0);
+                  const contentHeight = 108.0;
+                  final computedAspectRatio =
+                      cardWidth / (imageHeight + contentHeight);
+                  final childAspectRatio = crossAxisCount <= 2
+                      ? computedAspectRatio.clamp(0.50, 0.58)
+                      : computedAspectRatio.clamp(0.56, 0.66);
                   return GridView.builder(
-                    padding: const EdgeInsets.all(14),
+                    padding: const EdgeInsets.fromLTRB(14, 14, 14, 92),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: crossAxisCount,
-                      crossAxisSpacing: 12,
+                      crossAxisSpacing: crossSpacing,
                       mainAxisSpacing: 12,
-                      childAspectRatio: 0.70,
+                      childAspectRatio: childAspectRatio,
                     ),
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
@@ -95,7 +107,7 @@ class _ProductListState extends State<ProductList> {
                                   color: const Color(0xFFF1F5F9),
                                   child: SmartNetworkImage(
                                     imagePath: product.imagen,
-                                    height: 200,
+                                    height: imageHeight,
                                     fit: BoxFit.contain,
                                   ),
                                 ),
@@ -119,28 +131,40 @@ class _ProductListState extends State<ProductList> {
                               const Spacer(),
                               Row(
                                 children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 6,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: stockColor.withValues(alpha: 0.12),
-                                      borderRadius: BorderRadius.circular(999),
-                                    ),
-                                    child: Text(
-                                      'Stock: ${product.cantidad}',
-                                      style: TextStyle(
-                                        color: stockColor,
-                                        fontWeight: FontWeight.w600,
+                                  Expanded(
+                                    child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      alignment: Alignment.centerLeft,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                          vertical: 6,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: stockColor.withValues(alpha: 0.12),
+                                          borderRadius: BorderRadius.circular(999),
+                                        ),
+                                        child: Text(
+                                          'Stock: ${product.cantidad}',
+                                          style: TextStyle(
+                                            color: stockColor,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                  const Spacer(),
+                                  const SizedBox(width: 6),
                                   IconButton(
                                     icon: const Icon(Icons.edit_outlined),
                                     onPressed: () =>
                                         _openProductForm(product: product),
+                                    visualDensity: VisualDensity.compact,
+                                    constraints: const BoxConstraints.tightFor(
+                                      width: 36,
+                                      height: 36,
+                                    ),
+                                    padding: EdgeInsets.zero,
                                   ),
                                 ],
                               ),

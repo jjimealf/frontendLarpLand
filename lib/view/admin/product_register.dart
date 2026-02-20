@@ -17,12 +17,19 @@ class AddProductScreen extends StatefulWidget {
 
 class _AddProductScreenState extends State<AddProductScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  static const List<String> _defaultCategories = <String>[
+    'Armas',
+    'Armaduras',
+    'Accesorios',
+    'Consumibles',
+  ];
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
   final TextEditingController stockController = TextEditingController();
-  final TextEditingController categoryController = TextEditingController();
+  late List<String> _categories;
+  String? _selectedCategory;
 
   XFile? image;
   Uint8List? imageBytes;
@@ -37,9 +44,16 @@ class _AddProductScreenState extends State<AddProductScreen> {
       descriptionController.text = widget.product!.descripcion;
       priceController.text = widget.product!.precio;
       stockController.text = widget.product!.cantidad.toString();
-      categoryController.text = widget.product!.categoria;
       image = null;
       imageBytes = null;
+    }
+    _categories = List<String>.from(_defaultCategories);
+    if (widget.product != null) {
+      final currentCategory = widget.product!.categoria.trim();
+      if (currentCategory.isNotEmpty && !_categories.contains(currentCategory)) {
+        _categories.insert(0, currentCategory);
+      }
+      _selectedCategory = currentCategory.isEmpty ? null : currentCategory;
     }
   }
 
@@ -49,7 +63,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
     descriptionController.dispose();
     priceController.dispose();
     stockController.dispose();
-    categoryController.dispose();
     super.dispose();
   }
 
@@ -105,7 +118,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
           descriptionController.text,
           priceController.text,
           int.parse(stockController.text),
-          categoryController.text,
+          _selectedCategory!,
           image!,
         );
 
@@ -134,7 +147,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         descripcion: descriptionController.text,
         precio: priceController.text,
         stock: int.parse(stockController.text),
-        categoria: categoryController.text,
+        categoria: _selectedCategory!,
         imagen: image,
       );
 
@@ -300,15 +313,28 @@ class _AddProductScreenState extends State<AddProductScreen> {
                             ],
                           ),
                           const SizedBox(height: 12),
-                          TextFormField(
-                            controller: categoryController,
+                          DropdownButtonFormField<String>(
+                            initialValue: _selectedCategory,
                             decoration: _inputDecoration(
                               'Categoria',
                               Icons.category_outlined,
                             ),
+                            items: _categories
+                                .map(
+                                  (category) => DropdownMenuItem<String>(
+                                    value: category,
+                                    child: Text(category),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedCategory = value;
+                              });
+                            },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Por favor ingrese la categoria';
+                                return 'Seleccione una categoria';
                               }
                               return null;
                             },
