@@ -2,10 +2,11 @@ import 'dart:convert';
 
 import 'package:larpland/model/login.dart';
 import 'package:http/http.dart' as http;
+import 'package:larpland/service/api_config.dart';
 
 Future<Login> login(String email, String password) async {
   final response = await http.post(
-    Uri.parse('http://127.0.0.1:8000/api/login'),
+    Uri.parse('${ApiConfig.baseUrl}/api/login'),
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -16,8 +17,16 @@ Future<Login> login(String email, String password) async {
     }),
   );
   if (response.statusCode == 200) {
-    return Login.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    try {
+      final decoded = jsonDecode(response.body);
+      if (decoded is Map<String, dynamic>) {
+        return Login.fromJson(decoded);
+      }
+      throw Exception('Respuesta de login no es un objeto JSON');
+    } catch (e) {
+      throw Exception('Login invalido. Respuesta: ${response.body}');
+    }
   } else {
-    throw Exception('Login fallido');
+    throw Exception('Login fallido (${response.statusCode}): ${response.body}');
   }
 }
