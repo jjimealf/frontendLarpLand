@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 Future<List<User>> fetchUserList() async {
-  final response = await http.get(Uri.parse('https://mongoose-hip-lark.ngrok-free.app/api/users'));
+  final response = await http.get(Uri.parse('http://127.0.0.1:8000/api/users'));
   if (response.statusCode == 200) {
     return List<User>.from(
         jsonDecode(response.body).map((user) => User.fromJson(user)));
@@ -13,7 +13,7 @@ Future<List<User>> fetchUserList() async {
 }
 
 Future<User> showUser(int id) async {
-  final response = await http.get(Uri.parse('https://mongoose-hip-lark.ngrok-free.app/api/users/$id'));
+  final response = await http.get(Uri.parse('http://127.0.0.1:8000/api/users/$id'));
   if (response.statusCode == 200) {
     return User.fromJson(jsonDecode(response.body));
   } else {

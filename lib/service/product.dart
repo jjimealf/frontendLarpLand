@@ -8,7 +8,7 @@ import 'package:async/async.dart';
 
 Future<List<Product>> fetchProductList() async {
   final response =
-      await http.get(Uri.parse('https://mongoose-hip-lark.ngrok-free.app/api/products'));
+      await http.get(Uri.parse('http://127.0.0.1:8000/api/products'));
   if (response.statusCode == 200) {
     return List<Product>.from(
         jsonDecode(response.body).map((product) => Product.fromJson(product)));
@@ -26,7 +26,7 @@ Future<Product> addProduct(String name, String descripcion, String precio,
       filename: basename(imagen.path));
   final request = http.MultipartRequest(
     'POST',
-    Uri.parse('https://mongoose-hip-lark.ngrok-free.app/api/products'),
+    Uri.parse('http://127.0.0.1:8000/api/products'),
   )
     ..fields['nombre'] = name
     ..fields['descripcion'] = descripcion
@@ -79,7 +79,7 @@ Future<void> updateProduct(int id,
 
 
   final response = await http.put(
-    Uri.parse('https://mongoose-hip-lark.ngrok-free.app/api/products/$id'),
+    Uri.parse('http://127.0.0.1:8000/api/products/$id'),
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',

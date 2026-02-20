@@ -5,7 +5,7 @@ import 'package:larpland/model/roleplay_event.dart';
 import 'package:http/http.dart' as http;
 
 Future<List<RoleplayEvent>> fetchEventList() async {
-  final response = await http.get(Uri.parse('https://mongoose-hip-lark.ngrok-free.app/api/events'));
+  final response = await http.get(Uri.parse('http://127.0.0.1:8000/api/events'));
   if (response.statusCode == 200) {
     return List<RoleplayEvent>.from(jsonDecode(response.body)
         .map((event) => RoleplayEvent.fromJson(event)));
@@ -17,7 +17,7 @@ Future<List<RoleplayEvent>> fetchEventList() async {
 Future<RoleplayEvent> addEvent(String name, String description,
     String fechaInicio, String fechaFin) async {
   final response = await http.post(
-    Uri.parse('https://mongoose-hip-lark.ngrok-free.app/api/events'),
+    Uri.parse('http://127.0.0.1:8000/api/events'),
     body: {
       'nombre': name,
       'descripcion': description,

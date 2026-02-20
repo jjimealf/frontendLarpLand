@@ -6,7 +6,7 @@ import 'dart:convert';
 
 
 Future<List<ProductReviews>> fetchProductReviews() async {
-  final response = await http.get(Uri.parse('https://mongoose-hip-lark.ngrok-free.app/api/reviews'));
+  final response = await http.get(Uri.parse('http://127.0.0.1:8000/api/reviews'));
   if (response.statusCode == 200) {
     return List<ProductReviews>.from(jsonDecode(response.body).map((review) => ProductReviews.fromJson(review)));
   } else {
@@ -16,7 +16,7 @@ Future<List<ProductReviews>> fetchProductReviews() async {
 
 Future<void> addProductReview(int userId, int productId, String comment, int rating) async {
   final response = await http.post(
-    Uri.parse('https://mongoose-hip-lark.ngrok-free.app/api/reviews'),
+    Uri.parse('http://127.0.0.1:8000/api/reviews'),
     body: {
       'userId': userId,
       'productId': productId,
@@ -31,7 +31,7 @@ Future<void> addProductReview(int userId, int productId, String comment, int rat
 }
 
 Future<List<ProductReviews>> fetchProductReviewsById(int productId) async {
-  final response = await http.get(Uri.parse('https://mongoose-hip-lark.ngrok-free.app/api/reviews/$productId'));
+  final response = await http.get(Uri.parse('http://127.0.0.1:8000/api/reviews/$productId'));
   if (response.statusCode == 200) {
     return List<ProductReviews>.from(jsonDecode(response.body).map((review) => ProductReviews.fromJson(review)));
   } else {
