@@ -18,6 +18,7 @@ class _AdminHomeState extends State<AdminHome> {
 
   @override
   Widget build(BuildContext context) {
+    final isCompactTabs = MediaQuery.sizeOf(context).width < 430;
     final screens = [
       UsersList(excludeUserId: widget.userId),
       ProductList(userId: widget.userId),
@@ -121,38 +122,62 @@ class _AdminHomeState extends State<AdminHome> {
                                       onTap: () =>
                                           setState(() => selectedIndex = index),
                                       child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                          vertical: 12,
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: isCompactTabs ? 4 : 8,
+                                          vertical: isCompactTabs ? 8 : 12,
                                         ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              tabs[index].icon,
-                                              size: 18,
-                                              color: isSelected
-                                                  ? Colors.white
-                                                  : const Color(0xFF1D3557),
-                                            ),
-                                            const SizedBox(width: 6),
-                                            Flexible(
-                                              child: Text(
-                                                tabs[index].label,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  color: isSelected
-                                                      ? Colors.white
-                                                      : const Color(
-                                                          0xFF1D3557),
-                                                ),
+                                        child: isCompactTabs
+                                            ? Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Icon(
+                                                    tabs[index].icon,
+                                                    size: 18,
+                                                    color: isSelected
+                                                        ? Colors.white
+                                                        : const Color(0xFF1D3557),
+                                                  ),
+                                                  const SizedBox(height: 4),
+                                                  Text(
+                                                    tabs[index].label,
+                                                    maxLines: 1,
+                                                    style: TextStyle(
+                                                      fontSize: 11,
+                                                      fontWeight: FontWeight.w600,
+                                                      color: isSelected
+                                                          ? Colors.white
+                                                          : const Color(0xFF1D3557),
+                                                    ),
+                                                  ),
+                                                ],
+                                              )
+                                            : Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Icon(
+                                                    tabs[index].icon,
+                                                    size: 18,
+                                                    color: isSelected
+                                                        ? Colors.white
+                                                        : const Color(0xFF1D3557),
+                                                  ),
+                                                  const SizedBox(width: 6),
+                                                  Flexible(
+                                                    child: Text(
+                                                      tabs[index].label,
+                                                      maxLines: 1,
+                                                      overflow: TextOverflow.ellipsis,
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.w600,
+                                                        color: isSelected
+                                                            ? Colors.white
+                                                            : const Color(0xFF1D3557),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
-                                            ),
-                                          ],
-                                        ),
                                       ),
                                     ),
                                   ),
