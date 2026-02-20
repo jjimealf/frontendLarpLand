@@ -34,8 +34,8 @@ Future<void> addProductReview(
     Uri.parse('${ApiConfig.baseUrl}/api/reviews'),
     headers: _jsonHeaders(),
     body: {
-      'userId': userId.toString(),
-      'productId': productId.toString(),
+      'user_id': userId.toString(),
+      'product_id': productId.toString(),
       'comment': comment,
       'rating': rating.toString(),
     },
