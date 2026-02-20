@@ -20,7 +20,7 @@ class _AdminHomeState extends State<AdminHome> {
   Widget build(BuildContext context) {
     final screens = [
       UsersList(excludeUserId: widget.userId),
-      const ProductList(),
+      ProductList(userId: widget.userId),
       const EventScreen(),
     ];
     final tabs = <({IconData icon, String label})>[

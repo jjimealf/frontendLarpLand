@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:larpland/component/smart_network_image.dart';
 import 'package:larpland/model/product.dart';
 import 'package:larpland/service/product.dart';
+import 'package:larpland/view/product_detail/product_detail.dart';
 import 'package:larpland/view/admin/product_register.dart';
 
 class ProductList extends StatefulWidget {
-  const ProductList({super.key});
+  final int userId;
+
+  const ProductList({super.key, required this.userId});
 
   @override
   State<ProductList> createState() => _ProductListState();
@@ -80,6 +83,18 @@ class _ProductListState extends State<ProductList> {
     }
   }
 
+  Future<void> _openProductDetail(Product product) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProductDetail(
+          product: product,
+          userId: widget.userId,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -132,118 +147,122 @@ class _ProductListState extends State<ProductList> {
                               ? Colors.orange
                               : Colors.red;
 
-                      return Card(
-                        elevation: 0,
-                        color: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          side: BorderSide(
-                            color: Colors.blueGrey.withValues(alpha: 0.15),
+                      return InkWell(
+                        borderRadius: BorderRadius.circular(14),
+                        onTap: () => _openProductDetail(product),
+                        child: Card(
+                          elevation: 0,
+                          color: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            side: BorderSide(
+                              color: Colors.blueGrey.withValues(alpha: 0.15),
+                            ),
                           ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: Container(
-                                  color: const Color(0xFFF1F5F9),
-                                  child: SmartNetworkImage(
-                                    imagePath: product.imagen,
-                                    height: imageHeight,
-                                    fit: BoxFit.contain,
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Container(
+                                    color: const Color(0xFFF1F5F9),
+                                    child: SmartNetworkImage(
+                                      imagePath: product.imagen,
+                                      height: imageHeight,
+                                      fit: BoxFit.contain,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                product.nombre,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
+                                const SizedBox(height: 10),
+                                Text(
+                                  product.nombre,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                product.categoria,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(color: Colors.black54),
-                              ),
-                              const Spacer(),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: FittedBox(
-                                      fit: BoxFit.scaleDown,
-                                      alignment: Alignment.centerLeft,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                          vertical: 6,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: stockColor.withValues(alpha: 0.12),
-                                          borderRadius: BorderRadius.circular(999),
-                                        ),
-                                        child: Text(
-                                          'Stock: ${product.cantidad}',
-                                          style: TextStyle(
-                                            color: stockColor,
-                                            fontWeight: FontWeight.w600,
+                                const SizedBox(height: 4),
+                                Text(
+                                  product.categoria,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(color: Colors.black54),
+                                ),
+                                const Spacer(),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        alignment: Alignment.centerLeft,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 6,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: stockColor.withValues(alpha: 0.12),
+                                            borderRadius: BorderRadius.circular(999),
+                                          ),
+                                          child: Text(
+                                            'Stock: ${product.cantidad}',
+                                            style: TextStyle(
+                                              color: stockColor,
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  PopupMenuButton<String>(
-                                    tooltip: 'Acciones',
-                                    onSelected: (value) {
-                                      if (value == 'edit') {
-                                        _openProductForm(product: product);
-                                      } else if (value == 'delete') {
-                                        _deleteProduct(product);
-                                      }
-                                    },
-                                    itemBuilder: (context) => const [
-                                      PopupMenuItem<String>(
-                                        value: 'edit',
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.edit_outlined, size: 18),
-                                            SizedBox(width: 8),
-                                            Text('Editar'),
-                                          ],
+                                    const SizedBox(width: 6),
+                                    PopupMenuButton<String>(
+                                      tooltip: 'Acciones',
+                                      onSelected: (value) {
+                                        if (value == 'edit') {
+                                          _openProductForm(product: product);
+                                        } else if (value == 'delete') {
+                                          _deleteProduct(product);
+                                        }
+                                      },
+                                      itemBuilder: (context) => const [
+                                        PopupMenuItem<String>(
+                                          value: 'edit',
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.edit_outlined, size: 18),
+                                              SizedBox(width: 8),
+                                              Text('Editar'),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                      PopupMenuItem<String>(
-                                        value: 'delete',
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.delete_outline,
-                                              size: 18,
-                                              color: Colors.red,
-                                            ),
-                                            SizedBox(width: 8),
-                                            Text(
-                                              'Borrar',
-                                              style: TextStyle(color: Colors.red),
-                                            ),
-                                          ],
+                                        PopupMenuItem<String>(
+                                          value: 'delete',
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.delete_outline,
+                                                size: 18,
+                                                color: Colors.red,
+                                              ),
+                                              SizedBox(width: 8),
+                                              Text(
+                                                'Borrar',
+                                                style: TextStyle(color: Colors.red),
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                    icon: const Icon(Icons.more_vert),
-                                    padding: EdgeInsets.zero,
-                                  ),
-                                ],
-                              ),
-                            ],
+                                      ],
+                                      icon: const Icon(Icons.more_vert),
+                                      padding: EdgeInsets.zero,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       );
