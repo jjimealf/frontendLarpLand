@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:larpland/model/user_review.dart';
@@ -43,7 +42,7 @@ Future<void> addProductReview(
   );
 
   if (response.statusCode != 200) {
-    throw HttpException(
+    throw Exception(
       'Fallo al guardar la resena (${response.statusCode}): ${response.body}',
     );
   }
@@ -63,7 +62,7 @@ Future<List<ProductReviews>> fetchProductReviewsById(int productId) async {
         .toList(growable: false);
   }
 
-  throw HttpException(
+  throw Exception(
     'Fallo al cargar resenas (${response.statusCode}): ${response.body}',
   );
 }

@@ -20,6 +20,21 @@ class _ProductListState extends State<ProductList> {
     productList = fetchProductList();
   }
 
+  Future<void> _openProductForm({Product? product}) async {
+    final changed = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddProductScreen(product: product),
+      ),
+    );
+
+    if (changed == true && mounted) {
+      setState(() {
+        productList = fetchProductList();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -97,15 +112,7 @@ class _ProductListState extends State<ProductList> {
                           ),
                           IconButton(
                             icon: const Icon(Icons.edit_outlined),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      AddProductScreen(product: product),
-                                ),
-                              );
-                            },
+                            onPressed: () => _openProductForm(product: product),
                           ),
                         ],
                       ),
@@ -128,14 +135,7 @@ class _ProductListState extends State<ProductList> {
           bottom: 16,
           right: 16,
           child: FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const AddProductScreen(),
-                ),
-              );
-            },
+            onPressed: _openProductForm,
             backgroundColor: const Color(0xFF1D3557),
             foregroundColor: Colors.white,
             heroTag: 'addProduct',

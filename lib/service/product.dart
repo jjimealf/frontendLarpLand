@@ -1,12 +1,11 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:typed_data';
 
-import 'package:async/async.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:larpland/model/product.dart';
 import 'package:larpland/service/api_config.dart';
 import 'package:larpland/service/auth_session.dart';
-import 'package:path/path.dart';
 
 Future<List<Product>> fetchProductList() async {
   final response = await http.get(
@@ -27,16 +26,19 @@ Future<List<Product>> fetchProductList() async {
       .toList(growable: false);
 }
 
-Future<Product> addProduct(String name, String descripcion, String precio,
-    int stock, String categoria, File imagen) async {
-  // ignore: deprecated_member_use
-  final stream = http.ByteStream(DelegatingStream.typed(imagen.openRead()));
-  final length = await imagen.length();
-  final multipartFile = http.MultipartFile(
-    'file',
-    stream,
-    length,
-    filename: basename(imagen.path),
+Future<void> addProduct(
+  String name,
+  String descripcion,
+  String precio,
+  int stock,
+  String categoria,
+  XFile imagen,
+) async {
+  final Uint8List bytes = await imagen.readAsBytes();
+  final multipartFile = http.MultipartFile.fromBytes(
+    'imagen',
+    bytes,
+    filename: imagen.name,
   );
   final request = http.MultipartRequest(
     'POST',
@@ -53,11 +55,10 @@ Future<Product> addProduct(String name, String descripcion, String precio,
   final streamedResponse = await request.send();
   final responseBody = await streamedResponse.stream.bytesToString();
 
-  if (streamedResponse.statusCode == 200) {
-    return Product.fromJson(jsonDecode(responseBody) as Map<String, dynamic>);
-  } else {
-    throw HttpException(
-      'Fallo al agregar producto (${streamedResponse.statusCode})',
+  if (streamedResponse.statusCode != 200 &&
+      streamedResponse.statusCode != 201) {
+    throw Exception(
+      'Fallo al agregar producto (${streamedResponse.statusCode}): $responseBody',
     );
   }
 }
@@ -70,7 +71,7 @@ Future<void> updateProduct(
   String? valoracionTotal,
   int? stock,
   String? categoria,
-  File? imagen,
+  XFile? imagen,
 }) async {
   if (imagen != null) {
     await _updateProductWithImage(
@@ -128,16 +129,13 @@ Future<void> _updateProductWithImage(
   String? valoracionTotal,
   int? stock,
   String? categoria,
-  required File imagen,
+  required XFile imagen,
 }) async {
-  // ignore: deprecated_member_use
-  final stream = http.ByteStream(DelegatingStream.typed(imagen.openRead()));
-  final length = await imagen.length();
-  final multipartFile = http.MultipartFile(
-    'file',
-    stream,
-    length,
-    filename: basename(imagen.path),
+  final Uint8List bytes = await imagen.readAsBytes();
+  final multipartFile = http.MultipartFile.fromBytes(
+    'imagen',
+    bytes,
+    filename: imagen.name,
   );
 
   final request = http.MultipartRequest(
@@ -168,7 +166,8 @@ Future<void> _updateProductWithImage(
   }
 
   final streamedResponse = await request.send();
-  if (streamedResponse.statusCode != 200) {
+  if (streamedResponse.statusCode != 200 &&
+      streamedResponse.statusCode != 201) {
     final body = await streamedResponse.stream.bytesToString();
     throw Exception(
       'Fallo al actualizar producto (${streamedResponse.statusCode}): $body',
