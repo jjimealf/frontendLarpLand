@@ -14,8 +14,8 @@ void main() {
   testWidgets('MyApp muestra la pantalla de login', (WidgetTester tester) async {
     await tester.pumpWidget(const MyApp());
 
-    expect(find.text('Login'), findsOneWidget);
+    expect(find.text('Bienvenido de vuelta'), findsOneWidget);
     expect(find.byType(TextFormField), findsNWidgets(2));
-    expect(find.text('Logearse'), findsOneWidget);
+    expect(find.text('Entrar'), findsOneWidget);
   });
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:larpland/service/auth_session.dart';
 import 'package:larpland/view/home/catalog.dart';
 import 'package:larpland/view/home/event_list.dart';
 
@@ -36,7 +37,10 @@ class _HomeScreenState extends State<HomeScreen> {
         leading: IconButton(
           icon: const Icon(Icons.logout),
           tooltip: 'Cerrar sesion',
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            AuthSession.token = null;
+            Navigator.pop(context);
+          },
         ),
       ),
       body: IndexedStack(

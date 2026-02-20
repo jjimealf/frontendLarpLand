@@ -72,6 +72,20 @@ Future<void> updateProduct(
   String? categoria,
   File? imagen,
 }) async {
+  if (imagen != null) {
+    await _updateProductWithImage(
+      id,
+      name: name,
+      descripcion: descripcion,
+      precio: precio,
+      valoracionTotal: valoracionTotal,
+      stock: stock,
+      categoria: categoria,
+      imagen: imagen,
+    );
+    return;
+  }
+
   final Map<String, dynamic> body = {};
   if (name != null) {
     body['nombre'] = name;
@@ -88,9 +102,6 @@ Future<void> updateProduct(
   if (categoria != null) {
     body['categoria'] = categoria;
   }
-  if (imagen != null) {
-    body['imagen'] = imagen.toString();
-  }
   if (valoracionTotal != null) {
     body['valoracion_total'] = valoracionTotal;
   }
@@ -106,6 +117,62 @@ Future<void> updateProduct(
   );
   if (response.statusCode != 200) {
     throw Exception('Fallo al actualizar producto');
+  }
+}
+
+Future<void> _updateProductWithImage(
+  int id, {
+  String? name,
+  String? descripcion,
+  String? precio,
+  String? valoracionTotal,
+  int? stock,
+  String? categoria,
+  required File imagen,
+}) async {
+  // ignore: deprecated_member_use
+  final stream = http.ByteStream(DelegatingStream.typed(imagen.openRead()));
+  final length = await imagen.length();
+  final multipartFile = http.MultipartFile(
+    'file',
+    stream,
+    length,
+    filename: basename(imagen.path),
+  );
+
+  final request = http.MultipartRequest(
+    'POST',
+    Uri.parse('${ApiConfig.baseUrl}/api/products/$id'),
+  )
+    ..headers.addAll(_jsonHeaders())
+    ..fields['_method'] = 'PUT'
+    ..files.add(multipartFile);
+
+  if (name != null) {
+    request.fields['nombre'] = name;
+  }
+  if (descripcion != null) {
+    request.fields['descripcion'] = descripcion;
+  }
+  if (precio != null) {
+    request.fields['precio'] = precio;
+  }
+  if (stock != null) {
+    request.fields['cantidad'] = stock.toString();
+  }
+  if (categoria != null) {
+    request.fields['categoria'] = categoria;
+  }
+  if (valoracionTotal != null) {
+    request.fields['valoracion_total'] = valoracionTotal;
+  }
+
+  final streamedResponse = await request.send();
+  if (streamedResponse.statusCode != 200) {
+    final body = await streamedResponse.stream.bytesToString();
+    throw Exception(
+      'Fallo al actualizar producto (${streamedResponse.statusCode}): $body',
+    );
   }
 }
 

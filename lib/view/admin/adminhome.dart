@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:larpland/service/auth_session.dart';
 import 'package:larpland/view/admin/event_list.dart';
 import 'package:larpland/view/admin/product_list.dart';
 import 'package:larpland/view/admin/users_list.dart';
@@ -62,7 +63,10 @@ class _AdminHomeState extends State<AdminHome> {
                               ),
                               child: IconButton(
                                 tooltip: 'Cerrar sesion',
-                                onPressed: () => Navigator.pop(context),
+                                onPressed: () {
+                                  AuthSession.token = null;
+                                  Navigator.pop(context);
+                                },
                                 icon: const Icon(Icons.logout),
                               ),
                             ),

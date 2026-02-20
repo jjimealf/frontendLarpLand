@@ -13,13 +13,17 @@ class ReviewCard extends StatefulWidget {
 }
 
 class _ReviewCardState extends State<ReviewCard> {
+  static final Map<int, Future<User>> _userFutureCache = {};
 
   late Future<User> futureUser;
 
   @override
   void initState() {
     super.initState();
-    futureUser = showUser(widget.review.userId);
+    futureUser = _userFutureCache.putIfAbsent(
+      widget.review.userId,
+      () => showUser(widget.review.userId),
+    );
   }
 
   @override

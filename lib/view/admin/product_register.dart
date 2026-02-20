@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:larpland/model/product.dart';
+import 'package:larpland/service/api_config.dart';
 import 'package:larpland/service/product.dart';
 
 class AddProductScreen extends StatefulWidget {
@@ -36,8 +37,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       priceController.text = widget.product!.precio;
       stockController.text = widget.product!.cantidad.toString();
       categoryController.text = widget.product!.categoria;
-      // Assuming you have a way to convert the image URL to a File, if needed
-      image = File(widget.product!.imagen);
+      image = null;
     }
   }
 
@@ -230,6 +230,15 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 },
                 child: const Text('Seleccionar Imagen'),
               ),
+              if (widget.product != null && image == null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Image.network(
+                    '${ApiConfig.baseUrl}/storage/img/${widget.product!.imagen.split('/').last}',
+                    height: 120,
+                    fit: BoxFit.cover,
+                  ),
+                ),
               if (image != null) Image.file(image!),
               ElevatedButton(
                 onPressed: _validateAndSubmit,

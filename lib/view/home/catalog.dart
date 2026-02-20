@@ -1,56 +1,76 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:larpland/model/product.dart';
 import 'package:larpland/provider/cart_provider.dart';
+import 'package:larpland/service/api_config.dart';
 import 'package:larpland/service/product.dart';
 import 'package:larpland/view/cart/cart.dart';
 import 'package:larpland/view/product_detail/product_detail.dart';
 import 'package:provider/provider.dart';
 
 class CatalogScreen extends StatefulWidget {
-
   final int userId;
 
-  const CatalogScreen( {super.key, required this.userId});
-
+  const CatalogScreen({super.key, required this.userId});
 
   @override
   State<CatalogScreen> createState() => _CatalogScreenState();
 }
 
 class _CatalogScreenState extends State<CatalogScreen> {
-  Future<List<Product>>? products;
-
-  TextEditingController searchController = TextEditingController();
+  late Future<List<Product>> productsFuture;
+  final TextEditingController searchController = TextEditingController();
+  final List<Product> _allProducts = [];
+  List<Product> _filteredProducts = [];
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
-    products = fetchProductList();
-    searchController.addListener(() {
-      filterProducts();
-    });
-  }
-
-  void filterProducts() {
-    if (searchController.text.isNotEmpty) {
-      setState(() {
-        products = fetchProductList().then((value) => value
-            .where((element) => element.nombre
-                .toLowerCase()
-                .contains(searchController.text.toLowerCase()))
-            .toList());
-      });
-    } else {
-      setState(() {
-        products = fetchProductList();
-      });
-    }
+    productsFuture = _loadProducts();
+    searchController.addListener(_onSearchChanged);
   }
 
   @override
   void dispose() {
+    _debounce?.cancel();
     searchController.dispose();
     super.dispose();
+  }
+
+  Future<List<Product>> _loadProducts() async {
+    final fetched = await fetchProductList();
+    _allProducts
+      ..clear()
+      ..addAll(fetched);
+    _filteredProducts = List<Product>.from(_allProducts);
+    return _filteredProducts;
+  }
+
+  void _onSearchChanged() {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 250), _filterProducts);
+  }
+
+  void _filterProducts() {
+    final query = searchController.text.trim().toLowerCase();
+    if (!mounted) return;
+
+    setState(() {
+      if (query.isEmpty) {
+        _filteredProducts = List<Product>.from(_allProducts);
+      } else {
+        _filteredProducts = _allProducts
+            .where((item) => item.nombre.toLowerCase().contains(query))
+            .toList(growable: false);
+      }
+    });
+  }
+
+  String _productImageUrl(Product product) {
+    final fileName = product.imagen.split('/').last;
+    return '${ApiConfig.baseUrl}/storage/img/$fileName';
   }
 
   @override
@@ -59,56 +79,60 @@ class _CatalogScreenState extends State<CatalogScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text('Catálogo de Productos'),
+        title: const Text('Catalogo de Productos'),
         actions: [
           IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const CartScreen(),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.shopping_cart))
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const CartScreen(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.shopping_cart),
+          )
         ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8),
               child: TextField(
                 controller: searchController,
                 decoration: const InputDecoration(
                   hintText: 'Buscar producto...',
                   prefixIcon: Icon(Icons.search),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(25.0)),
+                    borderRadius: BorderRadius.all(Radius.circular(25)),
                   ),
                 ),
               ),
             ),
             SafeArea(
               child: FutureBuilder<List<Product>>(
-                future: products,
+                future: productsFuture,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return GridView.builder(
                       shrinkWrap: true,
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         childAspectRatio: 0.7,
                       ),
-                      itemCount: snapshot.data!.length,
+                      itemCount: _filteredProducts.length,
                       itemBuilder: (context, index) {
+                        final product = _filteredProducts[index];
                         return GestureDetector(
+                          key: ValueKey(product.id),
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ProductDetail(
-                                  product: snapshot.data![index],
+                                  product: product,
                                   userId: widget.userId,
                                 ),
                               ),
@@ -118,21 +142,30 @@ class _CatalogScreenState extends State<CatalogScreen> {
                             child: Column(
                               children: [
                                 ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.network(
-                                      "https://mongoose-hip-lark.ngrok-free.app/storage/img/${snapshot.data![index].imagen.split('/').last}",
-                                      fit: BoxFit.cover,
-                                      height: 150,
-                                    )),
-                                Text(snapshot.data![index].nombre),
-                                Text(snapshot.data![index].precio),
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.network(
+                                    _productImageUrl(product),
+                                    fit: BoxFit.cover,
+                                    height: 150,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return const SizedBox(
+                                        height: 150,
+                                        child: Center(
+                                          child: Icon(Icons.broken_image),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                Text(product.nombre),
+                                Text(product.precio),
                                 ElevatedButton(
                                   onPressed: () {
                                     try {
-                                      if (snapshot.data![index].cantidad == 0) {
-                                        throw 'Product out of stock';
+                                      if (product.cantidad == 0) {
+                                        throw 'Producto sin stock';
                                       }
-                                      cart.addProduct(snapshot.data![index]);
+                                      cart.addProduct(product);
                                     } catch (e) {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(

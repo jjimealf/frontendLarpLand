@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:larpland/component/review_card.dart';
 import 'package:larpland/model/product.dart';
 import 'package:larpland/model/user_review.dart';
+import 'package:larpland/service/api_config.dart';
 import 'package:larpland/service/product.dart';
 import 'package:larpland/service/user_review.dart';
 
@@ -34,6 +35,11 @@ class _ProductDetailState extends State<ProductDetail> {
     super.dispose();
   }
 
+  String _productImageUrl() {
+    final fileName = widget.product.imagen.split('/').last;
+    return '${ApiConfig.baseUrl}/storage/img/$fileName';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,7 +53,7 @@ class _ProductDetailState extends State<ProductDetail> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
-                  'https://mongoose-hip-lark.ngrok-free.app/storage/img/${widget.product.imagen.split('/').last}',
+                  _productImageUrl(),
                   fit: BoxFit.cover,
                   height: 150,
                 ),

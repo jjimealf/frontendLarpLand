@@ -40,6 +40,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
           fechaInicioController.text,
           fechaFinController.text,
         );
+        await futureEvent;
+        if (!mounted) return;
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -55,6 +57,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
           ),
         );
       } catch (e) {
+        if (!mounted) return;
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -70,6 +73,15 @@ class _AddEventScreenState extends State<AddEventScreen> {
         );
       }
     }
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    descriptionController.dispose();
+    fechaInicioController.dispose();
+    fechaFinController.dispose();
+    super.dispose();
   }
 
   @override

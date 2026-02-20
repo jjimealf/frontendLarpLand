@@ -22,28 +22,53 @@ class Product {
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
-    return switch (json) {
-      {
-        'id': int id,
-        'nombre': String nombre,
-        'descripcion': String descripcion,
-        'precio': String precio,
-        'imagen': String imagen,
-        'cantidad': int cantidad,
-        'valoracion_total': String valoracionTotal,
-        'categoria': String categoria,
-      } =>
-        Product(
-          id: id,
-          nombre: nombre,
-          descripcion: descripcion,
-          precio: precio,
-          imagen: imagen,
-          cantidad: cantidad,
-          valoracionTotal: valoracionTotal,
-          categoria: categoria,
-        ),
-      _ => throw const FormatException('Fallo al cargar producto'),
-    };
+    final id = _asInt(json['id']);
+    final nombre = _asString(json['nombre']);
+    final descripcion = _asString(json['descripcion']);
+    final precio = _asString(json['precio']);
+    final imagen = _asString(json['imagen']);
+    final cantidad = _asInt(json['cantidad']);
+    final valoracionTotal = _asString(json['valoracion_total']);
+    final categoria = _asString(json['categoria']);
+
+    if (id == null ||
+        nombre == null ||
+        descripcion == null ||
+        precio == null ||
+        imagen == null ||
+        cantidad == null ||
+        valoracionTotal == null ||
+        categoria == null) {
+      throw const FormatException('Fallo al cargar producto');
+    }
+
+    return Product(
+      id: id,
+      nombre: nombre,
+      descripcion: descripcion,
+      precio: precio,
+      imagen: imagen,
+      cantidad: cantidad,
+      valoracionTotal: valoracionTotal,
+      categoria: categoria,
+    );
   }
+}
+
+int? _asInt(dynamic value) {
+  return switch (value) {
+    int v => v,
+    num v => v.toInt(),
+    String v => int.tryParse(v),
+    _ => null,
+  };
+}
+
+String? _asString(dynamic value) {
+  return switch (value) {
+    String v => v,
+    num v => v.toString(),
+    bool v => v.toString(),
+    _ => null,
+  };
 }
