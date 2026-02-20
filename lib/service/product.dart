@@ -111,6 +111,7 @@ Future<void> updateProduct(
   }
   if (valoracionTotal != null) {
     request.fields['valoracion_total'] = valoracionTotal;
+    request.fields['valoracionTotal'] = valoracionTotal;
   }
 
   final streamedResponse = await request.send();
@@ -178,6 +179,7 @@ Future<void> _updateProductWithImage(
   }
   if (valoracionTotal != null) {
     request.fields['valoracion_total'] = valoracionTotal;
+    request.fields['valoracionTotal'] = valoracionTotal;
   }
 
   final streamedResponse = await request.send();

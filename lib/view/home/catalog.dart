@@ -228,11 +228,11 @@ class _CatalogScreenState extends State<CatalogScreen> {
                             ((crossAxisCount - 1) * crossSpacing);
                         final cardWidth = availableWidth / crossAxisCount;
                         final imageHeight = (cardWidth * 0.62).clamp(95.0, 145.0);
-                        const contentHeight = 170.0;
+                        const contentHeight = 196.0;
                         final computedRatio = cardWidth / (imageHeight + contentHeight);
                         final childAspectRatio = crossAxisCount <= 2
-                            ? computedRatio.clamp(0.52, 0.58)
-                            : computedRatio.clamp(0.58, 0.66);
+                            ? computedRatio.clamp(0.48, 0.54)
+                            : computedRatio.clamp(0.54, 0.62);
 
                         if (_filteredProducts.isEmpty) {
                           return ListView(
@@ -321,36 +321,55 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                       ),
                                       const SizedBox(height: 6),
                                       Text(
-                                        product.precio,
+                                        '${product.precio} €',
                                         style: const TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.w700,
                                         ),
                                       ),
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.star_rounded,
+                                            size: 16,
+                                            color: Colors.amber,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Expanded(
+                                            child: Text(
+                                              '${product.valoracionTotal} / 5',
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: const TextStyle(
+                                                color: Colors.black54,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                       const Spacer(),
                                       Row(
                                         children: [
-                                          Expanded(
-                                            child: Container(
-                                              padding: const EdgeInsets.symmetric(
-                                                horizontal: 8,
-                                                vertical: 6,
-                                              ),
-                                              decoration: BoxDecoration(
-                                                color:
-                                                    stockColor.withValues(alpha: 0.12),
-                                                borderRadius:
-                                                    BorderRadius.circular(999),
-                                              ),
-                                              child: Text(
-                                                'Stock: ${product.cantidad}',
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                  color: stockColor,
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 12,
-                                                ),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 6,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: stockColor.withValues(alpha: 0.12),
+                                              borderRadius: BorderRadius.circular(999),
+                                            ),
+                                            child: Text(
+                                              'Stock: ${product.cantidad}',
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                color: stockColor,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 12,
                                               ),
                                             ),
                                           ),
