@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:larpland/component/smart_network_image.dart';
 import 'package:larpland/model/product.dart';
 import 'package:larpland/service/product.dart';
 import 'package:larpland/view/admin/product_register.dart';
@@ -49,74 +50,105 @@ class _ProductListState extends State<ProductList> {
                   message: 'Sin productos',
                 );
               }
-              return ListView.builder(
-                padding: const EdgeInsets.all(14),
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  final product = snapshot.data![index];
-                  final stockColor = product.cantidad > 10
-                      ? Colors.green
-                      : product.cantidad >= 3
-                          ? Colors.orange
-                          : Colors.red;
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 10),
-                    elevation: 0,
-                    color: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      side: BorderSide(
-                        color: Colors.blueGrey.withValues(alpha: 0.15),
-                      ),
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  final width = constraints.maxWidth;
+                  final crossAxisCount = width >= 1000
+                      ? 4
+                      : width >= 700
+                          ? 3
+                          : 2;
+                  return GridView.builder(
+                    padding: const EdgeInsets.all(14),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 0.70,
                     ),
-                    child: ListTile(
-                      leading: Container(
-                        width: 38,
-                        height: 38,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFEAF2F8),
-                          borderRadius: BorderRadius.circular(10),
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      final product = snapshot.data![index];
+                      final stockColor = product.cantidad > 10
+                          ? Colors.green
+                          : product.cantidad >= 3
+                              ? Colors.orange
+                              : Colors.red;
+
+                      return Card(
+                        elevation: 0,
+                        color: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          side: BorderSide(
+                            color: Colors.blueGrey.withValues(alpha: 0.15),
+                          ),
                         ),
-                        child: const Icon(
-                          Icons.category_outlined,
-                          color: Color(0xFF1D3557),
-                        ),
-                      ),
-                      title: Text(
-                        product.nombre,
-                        style: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      subtitle: Text(
-                        product.categoria,
-                        style: const TextStyle(color: Colors.black54),
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: stockColor.withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(999),
-                            ),
-                            child: Text(
-                              'Stock: ${product.cantidad}',
-                              style: TextStyle(
-                                color: stockColor,
-                                fontWeight: FontWeight.w600,
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: Container(
+                                  color: const Color(0xFFF1F5F9),
+                                  child: SmartNetworkImage(
+                                    imagePath: product.imagen,
+                                    height: 200,
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
                               ),
-                            ),
+                              const SizedBox(height: 10),
+                              Text(
+                                product.nombre,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                product.categoria,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(color: Colors.black54),
+                              ),
+                              const Spacer(),
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: stockColor.withValues(alpha: 0.12),
+                                      borderRadius: BorderRadius.circular(999),
+                                    ),
+                                    child: Text(
+                                      'Stock: ${product.cantidad}',
+                                      style: TextStyle(
+                                        color: stockColor,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  IconButton(
+                                    icon: const Icon(Icons.edit_outlined),
+                                    onPressed: () =>
+                                        _openProductForm(product: product),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.edit_outlined),
-                            onPressed: () => _openProductForm(product: product),
-                          ),
-                        ],
-                      ),
-                    ),
+                        ),
+                      );
+                    },
                   );
                 },
               );

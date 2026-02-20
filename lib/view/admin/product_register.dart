@@ -340,7 +340,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                               imagePath: widget.product!.imagen,
                               height: 300,
                               width: 300,
-                              fit: BoxFit.cover,
+                              fit: BoxFit.contain,
                               borderRadius: BorderRadius.circular(12),
                             ),
                           if (imageBytes != null)
@@ -350,7 +350,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                 imageBytes!,
                                 height: 300,
                                 width: 300,
-                                fit: BoxFit.cover,
+                                fit: BoxFit.contain,
                               ),
                             ),
                           const SizedBox(height: 20),

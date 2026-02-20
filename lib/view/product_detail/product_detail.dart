@@ -49,7 +49,7 @@ class _ProductDetailState extends State<ProductDetail> {
                 borderRadius: BorderRadius.circular(8),
                 child: SmartNetworkImage(
                   imagePath: widget.product.imagen,
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
                   height: 120,
                   width: 220,
                 ),
