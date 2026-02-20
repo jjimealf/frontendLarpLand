@@ -49,6 +49,44 @@ Future<RoleplayEvent> addEvent(
   }
 }
 
+Future<void> updateEvent(
+  int id, {
+  required String name,
+  required String description,
+  required String fechaInicio,
+  required String fechaFin,
+}) async {
+  final response = await http.put(
+    Uri.parse('${ApiConfig.baseUrl}/api/events/$id'),
+    headers: _jsonHeaders(),
+    body: {
+      'nombre': name,
+      'descripcion': description,
+      'fecha_inicio': fechaInicio,
+      'fecha_fin': fechaFin,
+    },
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception(
+      'Fallo al actualizar evento (${response.statusCode}): ${response.body}',
+    );
+  }
+}
+
+Future<void> deleteEvent(int id) async {
+  final response = await http.delete(
+    Uri.parse('${ApiConfig.baseUrl}/api/events/$id'),
+    headers: _jsonHeaders(),
+  );
+
+  if (response.statusCode != 200 && response.statusCode != 204) {
+    throw Exception(
+      'Fallo al borrar evento (${response.statusCode}): ${response.body}',
+    );
+  }
+}
+
 Map<String, String> _jsonHeaders() {
   final headers = <String, String>{
     'Accept': 'application/json',

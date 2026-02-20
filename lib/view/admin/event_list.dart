@@ -20,6 +20,63 @@ class _EventScreenState extends State<EventScreen> {
     eventList = fetchEventList();
   }
 
+  Future<void> _openEventForm({RoleplayEvent? event}) async {
+    final changed = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (context) => AddEventScreen(event: event)),
+    );
+    if (changed == true && mounted) {
+      setState(() {
+        eventList = fetchEventList();
+      });
+    }
+  }
+
+  Future<void> _deleteEvent(RoleplayEvent event) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Borrar evento'),
+        content: Text('¿Seguro que quieres borrar "${event.name}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Borrar'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) {
+      return;
+    }
+
+    try {
+      await deleteEvent(event.id);
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        eventList = fetchEventList();
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Evento borrado correctamente')),
+      );
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No se pudo borrar el evento: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -42,6 +99,28 @@ class _EventScreenState extends State<EventScreen> {
                   return EventCard(
                     event: event,
                     margin: const EdgeInsets.only(bottom: 10),
+                    trailingAction: Wrap(
+                      spacing: 8,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: () => _openEventForm(event: event),
+                          icon: const Icon(Icons.edit_outlined, size: 18),
+                          label: const Text('Editar'),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: () => _deleteEvent(event),
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            size: 18,
+                            color: Colors.red,
+                          ),
+                          label: const Text(
+                            'Borrar',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 },
               );
@@ -60,17 +139,7 @@ class _EventScreenState extends State<EventScreen> {
           bottom: 16,
           right: 16,
           child: FloatingActionButton(
-            onPressed: () async {
-              final changed = await Navigator.push<bool>(
-                context,
-                MaterialPageRoute(builder: (context) => const AddEventScreen()),
-              );
-              if (changed == true && mounted) {
-                setState(() {
-                  eventList = fetchEventList();
-                });
-              }
-            },
+            onPressed: _openEventForm,
             backgroundColor: const Color(0xFF1D3557),
             foregroundColor: Colors.white,
             tooltip: 'Agregar evento',

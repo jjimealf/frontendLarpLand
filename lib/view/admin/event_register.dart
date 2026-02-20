@@ -1,8 +1,11 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:larpland/model/roleplay_event.dart';
 import 'package:larpland/service/roleplay_event.dart';
 
 class AddEventScreen extends StatefulWidget {
-  const AddEventScreen({super.key});
+  final RoleplayEvent? event;
+
+  const AddEventScreen({super.key, this.event});
 
   @override
   State<AddEventScreen> createState() => _AddEventScreenState();
@@ -19,6 +22,25 @@ class _AddEventScreenState extends State<AddEventScreen> {
   DateTime? _fechaInicio;
   DateTime? _fechaFin;
   bool _isSubmitting = false;
+
+  bool get _isEditMode => widget.event != null;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.event != null) {
+      nameController.text = widget.event!.name;
+      descriptionController.text = widget.event!.description;
+      _fechaInicio = DateTime.tryParse(widget.event!.fechaInicio);
+      _fechaFin = DateTime.tryParse(widget.event!.fechaFin);
+      if (_fechaInicio != null) {
+        fechaInicioController.text = _formatDateTime(_fechaInicio!);
+      }
+      if (_fechaFin != null) {
+        fechaFinController.text = _formatDateTime(_fechaFin!);
+      }
+    }
+  }
 
   bool _validateAndSave() {
     final form = _formKey.currentState;
@@ -118,12 +140,22 @@ class _AddEventScreenState extends State<AddEventScreen> {
     });
 
     try {
-      await addEvent(
-        nameController.text.trim(),
-        descriptionController.text.trim(),
-        _toApiDateTime(_fechaInicio!),
-        _toApiDateTime(_fechaFin!),
-      );
+      if (_isEditMode) {
+        await updateEvent(
+          widget.event!.id,
+          name: nameController.text.trim(),
+          description: descriptionController.text.trim(),
+          fechaInicio: _toApiDateTime(_fechaInicio!),
+          fechaFin: _toApiDateTime(_fechaFin!),
+        );
+      } else {
+        await addEvent(
+          nameController.text.trim(),
+          descriptionController.text.trim(),
+          _toApiDateTime(_fechaInicio!),
+          _toApiDateTime(_fechaFin!),
+        );
+      }
 
       if (!mounted) {
         return;
@@ -132,8 +164,12 @@ class _AddEventScreenState extends State<AddEventScreen> {
       await showDialog<void>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Evento agregado'),
-          content: const Text('El evento ha sido agregado exitosamente.'),
+          title: Text(_isEditMode ? 'Evento actualizado' : 'Evento agregado'),
+          content: Text(
+            _isEditMode
+                ? 'El evento ha sido actualizado exitosamente.'
+                : 'El evento ha sido agregado exitosamente.',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -155,7 +191,11 @@ class _AddEventScreenState extends State<AddEventScreen> {
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Error'),
-          content: Text('No se pudo guardar el evento: $e'),
+          content: Text(
+            _isEditMode
+                ? 'No se pudo actualizar el evento: $e'
+                : 'No se pudo guardar el evento: $e',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -231,10 +271,10 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                 icon: const Icon(Icons.arrow_back),
                               ),
                               const SizedBox(width: 8),
-                              const Expanded(
+                              Expanded(
                                 child: Text(
-                                  'Agregar evento',
-                                  style: TextStyle(
+                                  _isEditMode ? 'Editar evento' : 'Agregar evento',
+                                  style: const TextStyle(
                                     fontSize: 24,
                                     fontWeight: FontWeight.w700,
                                     color: Color(0xFF1D3557),
@@ -331,9 +371,17 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                       color: Colors.white,
                                     ),
                                   )
-                                : const Icon(Icons.add_task_outlined),
+                                : Icon(
+                                    _isEditMode
+                                        ? Icons.save_outlined
+                                        : Icons.add_task_outlined,
+                                  ),
                             label: Text(
-                              _isSubmitting ? 'Guardando...' : 'Guardar evento',
+                              _isSubmitting
+                                  ? 'Guardando...'
+                                  : (_isEditMode
+                                      ? 'Actualizar evento'
+                                      : 'Guardar evento'),
                             ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF1D3557),
