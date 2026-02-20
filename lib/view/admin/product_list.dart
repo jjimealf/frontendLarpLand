@@ -35,6 +35,51 @@ class _ProductListState extends State<ProductList> {
     }
   }
 
+  Future<void> _deleteProduct(Product product) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Borrar producto'),
+        content: Text('¿Seguro que quieres borrar "${product.nombre}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Borrar'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) {
+      return;
+    }
+
+    try {
+      await deleteProduct(product.id);
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        productList = fetchProductList();
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Producto borrado correctamente')),
+      );
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No se pudo borrar el producto: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -155,15 +200,45 @@ class _ProductListState extends State<ProductList> {
                                     ),
                                   ),
                                   const SizedBox(width: 6),
-                                  IconButton(
-                                    icon: const Icon(Icons.edit_outlined),
-                                    onPressed: () =>
-                                        _openProductForm(product: product),
-                                    visualDensity: VisualDensity.compact,
-                                    constraints: const BoxConstraints.tightFor(
-                                      width: 36,
-                                      height: 36,
-                                    ),
+                                  PopupMenuButton<String>(
+                                    tooltip: 'Acciones',
+                                    onSelected: (value) {
+                                      if (value == 'edit') {
+                                        _openProductForm(product: product);
+                                      } else if (value == 'delete') {
+                                        _deleteProduct(product);
+                                      }
+                                    },
+                                    itemBuilder: (context) => const [
+                                      PopupMenuItem<String>(
+                                        value: 'edit',
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.edit_outlined, size: 18),
+                                            SizedBox(width: 8),
+                                            Text('Editar'),
+                                          ],
+                                        ),
+                                      ),
+                                      PopupMenuItem<String>(
+                                        value: 'delete',
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.delete_outline,
+                                              size: 18,
+                                              color: Colors.red,
+                                            ),
+                                            SizedBox(width: 8),
+                                            Text(
+                                              'Borrar',
+                                              style: TextStyle(color: Colors.red),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                    icon: const Icon(Icons.more_vert),
                                     padding: EdgeInsets.zero,
                                   ),
                                 ],

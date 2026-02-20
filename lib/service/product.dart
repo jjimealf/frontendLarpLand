@@ -121,6 +121,19 @@ Future<void> updateProduct(
   }
 }
 
+Future<void> deleteProduct(int id) async {
+  final response = await http.delete(
+    Uri.parse('${ApiConfig.baseUrl}/api/products/$id'),
+    headers: _jsonHeaders(),
+  );
+
+  if (response.statusCode != 200 && response.statusCode != 204) {
+    throw Exception(
+      'Fallo al borrar producto (${response.statusCode}): ${response.body}',
+    );
+  }
+}
+
 Future<void> _updateProductWithImage(
   int id, {
   String? name,
