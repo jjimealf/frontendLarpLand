@@ -2,11 +2,6 @@
 
 Aplicacion Flutter para gestion de tienda y eventos de rol en vivo (LARP), con roles de usuario y administrador.
 
-## Ramas disponibles
-
-- `master`: version original con backend Laravel (API REST).
-- `firebase`: version migrada para usar Firebase como backend (`Firebase Auth`, `Cloud Firestore`, `Firebase Storage`).
-
 ## Funcionalidades actuales
 
 - Autenticacion y registro contra API (`/api/login`, `/api/register`).
@@ -27,29 +22,19 @@ Aplicacion Flutter para gestion de tienda y eventos de rol en vivo (LARP), con r
 
 - Flutter / Dart
 - `provider` para estado de carrito
-- `http` para consumo de API REST (rama `master`)
-- `firebase_core` + `firebase_auth` + `cloud_firestore` + `firebase_storage` (rama `firebase`)
+- `http` para consumo de API REST
 - `image_picker` para seleccion de imagenes
 - `flutter_local_notifications` para recordatorios de eventos
 
 ## Configuracion de API
 
-La URL base se define en `lib/service/api_config.dart` (rama `master`):
+La URL base se define en `lib/service/api_config.dart`:
 
 - Web: `http://localhost:8000`
 - Android emulator: `http://10.0.2.2:8000`
 - Resto de plataformas: `http://localhost:8000`
 
 Asegurate de tener el backend disponible en esa direccion o ajusta `ApiConfig.baseUrl`.
-
-## Configuracion Firebase (rama `firebase`)
-
-1. Configura FlutterFire (`flutterfire configure`) o completa `lib/firebase_options.dart`.
-2. Habilita en Firebase Console:
-   - Authentication (Email/Password)
-   - Firestore Database
-   - Firebase Storage
-3. Agrega archivos de plataforma si aplica (`google-services.json`, `GoogleService-Info.plist`).
 
 ## Ejecutar el proyecto
 
