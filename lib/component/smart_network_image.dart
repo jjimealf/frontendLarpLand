@@ -23,14 +23,22 @@ class SmartNetworkImage extends StatefulWidget {
 }
 
 class _SmartNetworkImageState extends State<SmartNetworkImage> {
-  late final List<String> _candidates;
+  late List<String> _candidates;
   int _index = 0;
   bool _useAuthHeader = false;
 
   @override
   void initState() {
     super.initState();
-    _candidates = ApiConfig.resolveImageCandidates(widget.imagePath);
+    _resetCandidates();
+  }
+
+  @override
+  void didUpdateWidget(covariant SmartNetworkImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.imagePath != widget.imagePath) {
+      _resetCandidates();
+    }
   }
 
   @override
@@ -100,6 +108,12 @@ class _SmartNetworkImageState extends State<SmartNetworkImage> {
       );
     }
     return child;
+  }
+
+  void _resetCandidates() {
+    _candidates = ApiConfig.resolveImageCandidates(widget.imagePath);
+    _index = 0;
+    _useAuthHeader = false;
   }
 
   Widget _broken() {

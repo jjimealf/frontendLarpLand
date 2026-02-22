@@ -336,6 +336,9 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                         child: Container(
                                           color: const Color(0xFFF1F5F9),
                                           child: SmartNetworkImage(
+                                            key: ValueKey(
+                                              'product-thumb-${product.id}-${product.imagen}',
+                                            ),
                                             imagePath: product.imagen,
                                             fit: BoxFit.contain,
                                             height: imageHeight,
