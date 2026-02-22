@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:larpland/component/event_card.dart';
 import 'package:larpland/model/roleplay_event.dart';
 import 'package:larpland/service/roleplay_event.dart';
+import 'package:larpland/util/error_message.dart';
 
 class RegisteredEventsScreen extends StatefulWidget {
   final int userId;
@@ -27,6 +28,50 @@ class _RegisteredEventsScreenState extends State<RegisteredEventsScreen> {
       _eventsFuture = future;
     });
     await future;
+  }
+
+  Future<void> _cancelRegistration(RoleplayEvent event) async {
+    final isPast = _isPastEvent(event);
+    if (isPast) {
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Cancelar inscripcion'),
+        content: Text('¿Quieres cancelar tu inscripcion en "${event.name}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('No'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Cancelar inscripcion'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    try {
+      await cancelUserEventRegistration(userId: widget.userId, eventId: event.id);
+      if (!mounted) return;
+      setState(() {
+        _eventsFuture = fetchRegisteredEventsForUser(widget.userId);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Inscripcion cancelada: ${event.name}')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(uiErrorMessage(e))),
+      );
+    }
   }
 
   @override
@@ -105,39 +150,160 @@ class _RegisteredEventsScreenState extends State<RegisteredEventsScreen> {
               );
             }
 
+            final upcomingEvents = events
+                .where((event) => !_isPastEvent(event))
+                .toList(growable: false);
+            final pastEvents = events
+                .where(_isPastEvent)
+                .toList(growable: false);
+
             return RefreshIndicator(
               onRefresh: _refresh,
-              child: ListView.builder(
+              child: ListView(
                 padding: const EdgeInsets.fromLTRB(12, 12, 12, 24),
-                itemCount: events.length,
-                itemBuilder: (context, index) {
-                  final event = events[index];
-                  return EventCard(
-                    event: event,
-                    margin: const EdgeInsets.only(bottom: 10),
-                    trailingAction: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.verified_outlined,
-                          size: 18,
-                          color: Color(0xFF1D3557),
-                        ),
-                        SizedBox(width: 6),
-                        Text(
-                          'Inscrito',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
+                children: [
+                  _SectionHeader(
+                    title: 'Proximos',
+                    count: upcomingEvents.length,
+                    icon: Icons.event_available_outlined,
+                  ),
+                  if (upcomingEvents.isEmpty)
+                    const _SectionEmpty(message: 'No tienes eventos proximos'),
+                  ...upcomingEvents.map(
+                    (event) => EventCard(
+                      event: event,
+                      margin: const EdgeInsets.only(bottom: 10),
+                      trailingAction: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.verified_outlined,
+                            size: 18,
                             color: Color(0xFF1D3557),
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 6),
+                          OutlinedButton.icon(
+                            onPressed: () => _cancelRegistration(event),
+                            icon: const Icon(Icons.event_busy_outlined, size: 18),
+                            label: const Text('Cancelar'),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.red.shade700,
+                              side: BorderSide(color: Colors.red.shade200),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 8,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  );
-                },
+                  ),
+                  const SizedBox(height: 6),
+                  _SectionHeader(
+                    title: 'Pasados',
+                    count: pastEvents.length,
+                    icon: Icons.history,
+                  ),
+                  if (pastEvents.isEmpty)
+                    const _SectionEmpty(message: 'No hay eventos pasados'),
+                  ...pastEvents.map(
+                    (event) => EventCard(
+                      event: event,
+                      margin: const EdgeInsets.only(bottom: 10),
+                      trailingAction: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.check_circle_outline,
+                            size: 18,
+                            color: Color(0xFF457B9D),
+                          ),
+                          SizedBox(width: 6),
+                          Text(
+                            'Asistio / Finalizado',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF457B9D),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             );
           },
+        ),
+      ),
+    );
+  }
+
+  bool _isPastEvent(RoleplayEvent event) {
+    final end = DateTime.tryParse(event.fechaFin);
+    final start = DateTime.tryParse(event.fechaInicio);
+    final reference = end ?? start;
+    if (reference == null) {
+      return false;
+    }
+    return reference.isBefore(DateTime.now());
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  final String title;
+  final int count;
+  final IconData icon;
+
+  const _SectionHeader({
+    required this.title,
+    required this.count,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: const Color(0xFF1D3557)),
+          const SizedBox(width: 8),
+          Text(
+            '$title ($count)',
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
+              color: Color(0xFF1D3557),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SectionEmpty extends StatelessWidget {
+  final String message;
+
+  const _SectionEmpty({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.blueGrey.withValues(alpha: 0.12)),
+        ),
+        child: Text(
+          message,
+          style: const TextStyle(color: Colors.black54),
         ),
       ),
     );

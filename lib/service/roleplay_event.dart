@@ -115,6 +115,20 @@ Future<void> registerUserInEvent({
   }, SetOptions(merge: true));
 }
 
+Future<void> cancelUserEventRegistration({
+  required int userId,
+  required int eventId,
+}) async {
+  FirebaseBackend.ensureInitialized();
+  final docId = '${userId}_$eventId';
+  final ref = _eventRegistrations.doc(docId);
+  final snapshot = await ref.get();
+  if (!snapshot.exists) {
+    return;
+  }
+  await ref.delete();
+}
+
 CollectionReference<Map<String, dynamic>> get _eventRegistrations =>
     FirebaseBackend.firestore.collection('event_registrations');
 

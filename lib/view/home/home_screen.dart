@@ -16,12 +16,16 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int selectedIndex = 0;
+  int _eventsRefreshSignal = 0;
 
   @override
   Widget build(BuildContext context) {
     final screen = [
       CatalogScreen(userId: widget.userId),
-      EventPage(userId: widget.userId),
+      EventPage(
+        userId: widget.userId,
+        refreshSignal: _eventsRefreshSignal,
+      ),
       UserProfileScreen(userId: widget.userId),
     ];
 
@@ -63,7 +67,14 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         child: BottomNavigationBar(
           currentIndex: selectedIndex,
-          onTap: (value) => setState(() => selectedIndex = value),
+          onTap: (value) {
+            setState(() {
+              selectedIndex = value;
+              if (value == 1) {
+                _eventsRefreshSignal++;
+              }
+            });
+          },
           type: BottomNavigationBarType.fixed,
           elevation: 0,
           backgroundColor: const Color(0xFF1D3557),

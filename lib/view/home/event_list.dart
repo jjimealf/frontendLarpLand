@@ -9,8 +9,13 @@ import 'package:larpland/util/error_message.dart';
 
 class EventPage extends StatefulWidget {
   final int userId;
+  final int refreshSignal;
 
-  const EventPage({super.key, required this.userId});
+  const EventPage({
+    super.key,
+    required this.userId,
+    this.refreshSignal = 0,
+  });
 
   @override
   State<EventPage> createState() => _EventPageState();
@@ -31,6 +36,15 @@ class _EventPageState extends State<EventPage> {
   }
 
   @override
+  void didUpdateWidget(covariant EventPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.userId != widget.userId ||
+        oldWidget.refreshSignal != widget.refreshSignal) {
+      _reloadEvents();
+    }
+  }
+
+  @override
   void dispose() {
     for (final timer in _notificationTimers) {
       timer.cancel();
@@ -45,6 +59,19 @@ class _EventPageState extends State<EventPage> {
         ?.requestNotificationsPermission();
     await initializeNotifications();
     await scheduleEventNotifications();
+  }
+
+  void _reloadEvents() {
+    for (final timer in _notificationTimers) {
+      timer.cancel();
+    }
+    _notificationTimers.clear();
+    _notifiedEventIds.clear();
+
+    setState(() {
+      futureEvents = fetchEventList(userId: widget.userId);
+    });
+    unawaited(scheduleEventNotifications());
   }
 
   Future<void> initializeNotifications() async {
