@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:larpland/service/auth_session.dart';
 import 'package:larpland/view/admin/event_list.dart';
+import 'package:larpland/view/admin/orders_list.dart';
 import 'package:larpland/view/admin/product_list.dart';
 import 'package:larpland/view/admin/users_list.dart';
 
@@ -21,6 +22,7 @@ class _AdminHomeState extends State<AdminHome> {
     final screens = [
       UsersList(excludeUserId: widget.userId),
       ProductList(userId: widget.userId),
+      const OrdersAdminScreen(),
       const EventScreen(),
     ];
 
@@ -88,6 +90,11 @@ class _AdminHomeState extends State<AdminHome> {
               icon: Icon(Icons.inventory_2_outlined),
               activeIcon: Icon(Icons.inventory_2),
               label: 'Inventario',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.receipt_long_outlined),
+              activeIcon: Icon(Icons.receipt_long),
+              label: 'Pedidos',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.event_outlined),

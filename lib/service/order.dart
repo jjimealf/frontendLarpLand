@@ -3,6 +3,9 @@ import 'package:larpland/model/order.dart';
 import 'package:larpland/model/product.dart';
 import 'package:larpland/service/firebase_backend.dart';
 
+CollectionReference<Map<String, dynamic>> get _ordersCollection =>
+    FirebaseBackend.firestore.collection('orders');
+
 Future<int> createUserOrder({
   required int userId,
   required List<Product> cartItems,
@@ -47,7 +50,7 @@ Future<int> createUserOrder({
     (acc, item) => acc + ((item['quantity'] as num?)?.toInt() ?? 0),
   );
 
-  await FirebaseBackend.firestore.collection('orders').add(<String, dynamic>{
+  await _ordersCollection.add(<String, dynamic>{
     'id': orderId,
     'user_id': userId,
     'status': status,
@@ -89,6 +92,35 @@ Future<List<UserOrder>> fetchUserOrders(int userId) async {
     return bDate.compareTo(aDate);
   });
   return sorted;
+}
+
+Future<List<UserOrder>> fetchAllOrders() async {
+  FirebaseBackend.ensureInitialized();
+  final snapshot = await _ordersCollection.get();
+  final orders = snapshot.docs
+      .map(FirebaseBackend.normalizeSnapshotData)
+      .map(UserOrder.fromJson)
+      .toList(growable: false);
+
+  final sorted = List<UserOrder>.from(orders);
+  sorted.sort((a, b) {
+    final aDate = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+    final bDate = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+    return bDate.compareTo(aDate);
+  });
+  return sorted;
+}
+
+Future<void> updateOrderStatus({
+  required int orderId,
+  required String status,
+}) async {
+  FirebaseBackend.ensureInitialized();
+  final ref = await FirebaseBackend.findRefByNumericId(_ordersCollection, orderId);
+  await ref.set(<String, dynamic>{
+    'status': status.trim().toLowerCase(),
+    'updated_at': FieldValue.serverTimestamp(),
+  }, SetOptions(merge: true));
 }
 
 double _parsePrice(String value) {
