@@ -64,9 +64,8 @@ class _AdminHomeState extends State<AdminHome> {
                               ),
                               child: IconButton(
                                 tooltip: 'Cerrar sesion',
-                                onPressed: () async {
-                                  await AuthSession.signOut();
-                                  if (!context.mounted) return;
+                                onPressed: () {
+                                  AuthSession.token = null;
                                   Navigator.pop(context);
                                 },
                                 icon: const Icon(Icons.logout),

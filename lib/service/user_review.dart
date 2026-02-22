@@ -1,11 +1,27 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
 import 'package:larpland/model/user_review.dart';
-import 'package:larpland/service/firebase_backend.dart';
+import 'package:larpland/service/api_config.dart';
+import 'package:larpland/service/auth_session.dart';
 
 Future<List<ProductReviews>> fetchProductReviews() async {
-  FirebaseBackend.ensureInitialized();
-  final snapshot = await FirebaseBackend.reviews.get();
-  return _mapReviewDocs(snapshot.docs);
+  final response = await http.get(
+    Uri.parse('${ApiConfig.baseUrl}/api/reviews'),
+    headers: _jsonHeaders(),
+  );
+  if (response.statusCode == 200) {
+    final decoded = jsonDecode(response.body);
+    final items = _extractReviewList(decoded);
+    return items
+        .whereType<Map<String, dynamic>>()
+        .map(ProductReviews.fromJson)
+        .toList(growable: false);
+  }
+
+  throw Exception(
+    'Fallo al cargar las resenas (${response.statusCode}): ${response.body}',
+  );
 }
 
 Future<void> addProductReview(
@@ -14,47 +30,67 @@ Future<void> addProductReview(
   String comment,
   int rating,
 ) async {
-  FirebaseBackend.ensureInitialized();
-  final reviewId = await FirebaseBackend.nextNumericId('reviews');
-  await FirebaseBackend.reviews.add(<String, dynamic>{
-    'id': reviewId,
-    'user_id': userId,
-    'product_id': productId,
-    'comment': comment.trim(),
-    'rating': rating,
-    'created_at': FieldValue.serverTimestamp(),
-    'updated_at': FieldValue.serverTimestamp(),
-  });
+  final response = await http.post(
+    Uri.parse('${ApiConfig.baseUrl}/api/reviews'),
+    headers: _jsonHeaders(),
+    body: {
+      'user_id': userId.toString(),
+      'product_id': productId.toString(),
+      'comment': comment,
+      'rating': rating.toString(),
+    },
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception(
+      'Fallo al guardar la resena (${response.statusCode}): ${response.body}',
+    );
+  }
 }
 
 Future<List<ProductReviews>> fetchProductReviewsById(int productId) async {
-  FirebaseBackend.ensureInitialized();
-  final snapshot = await FirebaseBackend.reviews
-      .where('product_id', isEqualTo: productId)
-      .get();
-  return _mapReviewDocs(snapshot.docs);
+  final response = await http.get(
+    Uri.parse('${ApiConfig.baseUrl}/api/reviews/$productId'),
+    headers: _jsonHeaders(),
+  );
+  if (response.statusCode == 200) {
+    final decoded = jsonDecode(response.body);
+    final items = _extractReviewList(decoded);
+    return items
+        .whereType<Map<String, dynamic>>()
+        .map(ProductReviews.fromJson)
+        .toList(growable: false);
+  }
+
+  throw Exception(
+    'Fallo al cargar resenas (${response.statusCode}): ${response.body}',
+  );
 }
 
-List<ProductReviews> _mapReviewDocs(
-  List<QueryDocumentSnapshot<Map<String, dynamic>>> docs,
-) {
-  final reviews = docs
-      .map(FirebaseBackend.normalizeSnapshotData)
-      .map((data) {
-        final createdAt = data['created_at'];
-        if (createdAt is Timestamp) {
-          data['created_at'] = createdAt.toDate().toIso8601String();
-        }
-        return data;
-      })
-      .map(ProductReviews.fromJson)
-      .toList(growable: false);
+Map<String, String> _jsonHeaders() {
+  final headers = <String, String>{
+    'Accept': 'application/json',
+  };
+  final token = AuthSession.token;
+  if (token != null && token.isNotEmpty) {
+    headers['Authorization'] = 'Bearer $token';
+  }
+  return headers;
+}
 
-  final sorted = List<ProductReviews>.from(reviews);
-  sorted.sort((a, b) {
-    final aTime = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-    final bTime = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-    return bTime.compareTo(aTime);
-  });
-  return sorted;
+List<dynamic> _extractReviewList(dynamic decoded) {
+  if (decoded is List) {
+    return decoded;
+  }
+  if (decoded is Map<String, dynamic>) {
+    final data = decoded['data'];
+    if (data is List) {
+      return data;
+    }
+    final reviews = decoded['reviews'];
+    if (reviews is List) {
+      return reviews;
+    }
+  }
+  return const [];
 }
