@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:larpland/service/login.dart';
+import 'package:larpland/util/error_message.dart';
 import 'package:larpland/view/admin/adminhome.dart';
 import 'package:larpland/view/home/home_screen.dart';
 import 'package:larpland/view/register/register.dart';
@@ -53,22 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           );
         } else {
-          // Login failed, show error message
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Login Fallido'),
-              content: const Text(
-                'Por favor, verifique su correo electronico y contrasena',
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('OK'),
-                ),
-              ],
-            ),
-          );
+          throw Exception('Rol de usuario no valido.');
         }
       } catch (e) {
         if (!mounted) return;
@@ -76,9 +62,9 @@ class _LoginScreenState extends State<LoginScreen> {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Error'),
-            content: Text(e.toString()),
-            actions: [
+              title: const Text('Error'),
+              content: Text(uiErrorMessage(e)),
+              actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: const Text('OK'),

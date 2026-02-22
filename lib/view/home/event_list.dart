@@ -5,6 +5,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:larpland/component/event_card.dart';
 import 'package:larpland/model/roleplay_event.dart';
 import 'package:larpland/service/roleplay_event.dart';
+import 'package:larpland/util/error_message.dart';
 
 class EventPage extends StatefulWidget {
   final int userId;
@@ -173,7 +174,7 @@ class _EventPageState extends State<EventPage> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
+        SnackBar(content: Text(uiErrorMessage(e))),
       );
     }
   }

@@ -6,6 +6,7 @@ import 'package:larpland/service/auth_session.dart';
 import 'package:larpland/service/order.dart';
 import 'package:larpland/service/roleplay_event.dart';
 import 'package:larpland/service/user.dart';
+import 'package:larpland/util/error_message.dart';
 import 'package:larpland/view/home/orders_history.dart';
 import 'package:larpland/view/home/registered_events.dart';
 
@@ -259,7 +260,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 } catch (e) {
                   if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(e.toString())),
+                    SnackBar(content: Text(uiErrorMessage(e))),
                   );
                   setDialogState(() {
                     isSaving = false;

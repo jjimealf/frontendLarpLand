@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:larpland/model/user.dart';
 import 'package:larpland/service/register.dart';
+import 'package:larpland/util/error_message.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -66,7 +67,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Error'),
-            content: Text(e.toString()),
+            content: Text(uiErrorMessage(e)),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
