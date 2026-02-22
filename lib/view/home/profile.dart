@@ -1,9 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 import 'package:flutter/material.dart';
+import 'package:larpland/model/order.dart';
 import 'package:larpland/model/user.dart';
 import 'package:larpland/service/auth_session.dart';
+import 'package:larpland/service/order.dart';
 import 'package:larpland/service/roleplay_event.dart';
 import 'package:larpland/service/user.dart';
+import 'package:larpland/view/home/orders_history.dart';
 
 class UserProfileScreen extends StatefulWidget {
   final int userId;
@@ -26,10 +29,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   Future<_ProfileData> _loadProfile() async {
     final user = await showUser(widget.userId);
     final registeredEventIds = await fetchRegisteredEventIds(widget.userId);
+    final orders = await fetchUserOrders(widget.userId);
     final firebaseUser = fb_auth.FirebaseAuth.instance.currentUser;
     return _ProfileData(
       user: user,
       registeredEventsCount: registeredEventIds.length,
+      orders: orders,
       firebaseEmailVerified: firebaseUser?.emailVerified ?? false,
       firebaseUid: firebaseUser?.uid,
     );
@@ -142,6 +147,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       label: 'Eventos inscritos',
                       value: '${data.registeredEventsCount}',
                     ),
+                    _InfoRow(
+                      icon: Icons.receipt_long_outlined,
+                      label: 'Pedidos realizados',
+                      value: '${data.orders.length}',
+                    ),
                     if (isAdmin)
                       _InfoRow(
                         icon: Icons.numbers_outlined,
@@ -155,6 +165,40 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         value: data.firebaseUid ?? 'No disponible',
                       ),
                   ],
+                ),
+                const SizedBox(height: 12),
+                FilledButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            OrdersHistoryScreen(userId: widget.userId),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.receipt_long_outlined),
+                  label: const Text('Ver mis pedidos'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFF1D3557),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _SectionCard(
+                  title: 'Pedidos recientes',
+                  children: data.orders.isEmpty
+                      ? const [
+                          Text(
+                            'Todavia no has realizado pedidos.',
+                            style: TextStyle(color: Colors.black54),
+                          ),
+                        ]
+                      : data.orders
+                          .take(5)
+                          .map((order) => _OrderRow(order: order))
+                          .toList(growable: false),
                 ),
               ],
             ),
@@ -284,12 +328,14 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 class _ProfileData {
   final User user;
   final int registeredEventsCount;
+  final List<UserOrder> orders;
   final bool firebaseEmailVerified;
   final String? firebaseUid;
 
   const _ProfileData({
     required this.user,
     required this.registeredEventsCount,
+    required this.orders,
     required this.firebaseEmailVerified,
     required this.firebaseUid,
   });
@@ -445,6 +491,105 @@ class _InfoRow extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OrderRow extends StatelessWidget {
+  final UserOrder order;
+
+  const _OrderRow({required this.order});
+
+  @override
+  Widget build(BuildContext context) {
+    final date = _formatDate(order.createdAt);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF1F5F9),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.receipt_long_outlined,
+              size: 18,
+              color: Color(0xFF1D3557),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Pedido #${order.id}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF1D3557),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '$date · ${order.totalItems} item(s) · ${order.totalAmount.toStringAsFixed(2)} €',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            _OrderStatusBadge(status: order.status),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatDate(DateTime? value) {
+    if (value == null) {
+      return 'Fecha no disponible';
+    }
+    final local = value.toLocal();
+    final d = local.day.toString().padLeft(2, '0');
+    final m = local.month.toString().padLeft(2, '0');
+    final y = local.year.toString().padLeft(4, '0');
+    final hh = local.hour.toString().padLeft(2, '0');
+    final mm = local.minute.toString().padLeft(2, '0');
+    return '$d/$m/$y $hh:$mm';
+  }
+}
+
+class _OrderStatusBadge extends StatelessWidget {
+  final String status;
+
+  const _OrderStatusBadge({required this.status});
+
+  @override
+  Widget build(BuildContext context) {
+    final normalized = status.trim().toLowerCase();
+    final (label, bg, fg) = switch (normalized) {
+      'completed' => ('Completado', const Color(0xFFE8F5E9), const Color(0xFF2E7D32)),
+      'pending' => ('Pendiente', const Color(0xFFFFF8E1), const Color(0xFFF9A825)),
+      _ => (status, const Color(0xFFEAF2F8), const Color(0xFF1D3557)),
+    };
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: fg,
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );

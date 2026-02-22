@@ -1,11 +1,14 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:larpland/component/smart_network_image.dart';
 import 'package:larpland/provider/cart_provider.dart';
+import 'package:larpland/service/order.dart';
 import 'package:larpland/service/product.dart';
 import 'package:provider/provider.dart';
 
 class CheckoutScreen extends StatelessWidget {
-  const CheckoutScreen({super.key});
+  final int userId;
+
+  const CheckoutScreen({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -164,6 +167,7 @@ class CheckoutScreen extends StatelessWidget {
 
   Future<void> _confirmOrder(BuildContext context, CartProvider cart) async {
     final updatedStocks = <int, int>{};
+    int? orderId;
 
     try {
       final cartItems = cart.items.values.toList(growable: false);
@@ -178,6 +182,7 @@ class CheckoutScreen extends StatelessWidget {
         await updateProduct(item.id, stock: newStock);
         updatedStocks[item.id] = item.cantidad;
       }
+      orderId = await createUserOrder(userId: userId, cartItems: cartItems);
     } catch (e) {
       for (final entry in updatedStocks.entries) {
         try {
@@ -206,7 +211,11 @@ class CheckoutScreen extends StatelessWidget {
       builder: (context) {
         return AlertDialog(
           title: const Text('Pedido realizado'),
-          content: const Text('Gracias por su compra.'),
+          content: Text(
+            orderId == null
+                ? 'Gracias por su compra.'
+                : 'Gracias por su compra. Pedido #$orderId registrado.',
+          ),
           actions: [
             TextButton(
               onPressed: () {

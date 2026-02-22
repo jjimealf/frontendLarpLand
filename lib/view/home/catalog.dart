@@ -117,7 +117,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const CartScreen(),
+                  builder: (context) => CartScreen(userId: widget.userId),
                 ),
               );
             },

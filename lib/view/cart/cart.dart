@@ -5,7 +5,9 @@ import 'package:larpland/view/cart/checkout.dart';
 import 'package:provider/provider.dart';
 
 class CartScreen extends StatelessWidget {
-  const CartScreen({super.key});
+  final int userId;
+
+  const CartScreen({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +201,8 @@ class CartScreen extends StatelessWidget {
                               onPressed: () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (context) => const CheckoutScreen(),
+                                    builder: (context) =>
+                                        CheckoutScreen(userId: userId),
                                   ),
                                 );
                               },
