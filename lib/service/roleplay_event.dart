@@ -86,6 +86,20 @@ Future<Set<int>> fetchRegisteredEventIds(int userId) async {
       .toSet();
 }
 
+Future<List<RoleplayEvent>> fetchRegisteredEventsForUser(int userId) async {
+  final events = await fetchEventList(userId: userId);
+  final registered = events.where((event) => event.isRegistered).toList();
+  registered.sort((a, b) {
+    final aDate = DateTime.tryParse(a.fechaInicio);
+    final bDate = DateTime.tryParse(b.fechaInicio);
+    if (aDate == null && bDate == null) return 0;
+    if (aDate == null) return 1;
+    if (bDate == null) return -1;
+    return aDate.compareTo(bDate);
+  });
+  return registered;
+}
+
 Future<void> registerUserInEvent({
   required int userId,
   required int eventId,

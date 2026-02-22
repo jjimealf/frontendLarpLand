@@ -7,6 +7,7 @@ import 'package:larpland/service/order.dart';
 import 'package:larpland/service/roleplay_event.dart';
 import 'package:larpland/service/user.dart';
 import 'package:larpland/view/home/orders_history.dart';
+import 'package:larpland/view/home/registered_events.dart';
 
 class UserProfileScreen extends StatefulWidget {
   final int userId;
@@ -131,11 +132,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       label: 'Verificacion',
                       value: data.firebaseEmailVerified ? 'Verificado' : 'Pendiente',
                     ),
-                    _InfoRow(
-                      icon: Icons.badge_outlined,
-                      label: 'Rol',
-                      value: isAdmin ? 'Administrador' : 'Usuario',
-                    ),
+                    if (isAdmin)
+                      const _InfoRow(
+                        icon: Icons.badge_outlined,
+                        label: 'Rol',
+                        value: 'Administrador',
+                      ),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -165,6 +167,25 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         value: data.firebaseUid ?? 'No disponible',
                       ),
                   ],
+                ),
+                const SizedBox(height: 12),
+                FilledButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            RegisteredEventsScreen(userId: widget.userId),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.event_available_outlined),
+                  label: const Text('Ver mis eventos inscritos'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFF457B9D),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
                 ),
                 const SizedBox(height: 12),
                 FilledButton.icon(
