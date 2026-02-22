@@ -12,11 +12,20 @@ class OrdersAdminScreen extends StatefulWidget {
 
 class _OrdersAdminScreenState extends State<OrdersAdminScreen> {
   late Future<List<UserOrder>> _ordersFuture;
+  final TextEditingController _searchController = TextEditingController();
+  String _statusFilter = 'all';
+  _DateFilter _dateFilter = _DateFilter.all;
 
   @override
   void initState() {
     super.initState();
     _ordersFuture = fetchAllOrders();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _refresh() async {
@@ -80,25 +89,94 @@ class _OrdersAdminScreenState extends State<OrdersAdminScreen> {
         }
 
         final orders = snapshot.data ?? const <UserOrder>[];
-        if (orders.isEmpty) {
-          return const _EmptyOrders();
-        }
+        final filteredOrders = _applyFilters(orders);
 
         return RefreshIndicator(
           onRefresh: _refresh,
           child: ListView.builder(
             padding: const EdgeInsets.fromLTRB(14, 14, 14, 24),
-            itemCount: orders.length,
-            itemBuilder: (context, index) => _AdminOrderCard(
-              order: orders[index],
-              onChangeStatus: (status) => _changeStatus(orders[index], status),
-            ),
+            itemCount: filteredOrders.isEmpty ? 2 : filteredOrders.length + 1,
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return _OrdersFiltersCard(
+                  searchController: _searchController,
+                  statusFilter: _statusFilter,
+                  dateFilter: _dateFilter,
+                  onSearchChanged: (_) => setState(() {}),
+                  onClearSearch: () {
+                    _searchController.clear();
+                    setState(() {});
+                  },
+                  onStatusChanged: (value) {
+                    setState(() => _statusFilter = value);
+                  },
+                  onDateChanged: (value) {
+                    setState(() => _dateFilter = value);
+                  },
+                );
+              }
+
+              if (filteredOrders.isEmpty) {
+                return const _EmptyFilteredOrders();
+              }
+
+              final order = filteredOrders[index - 1];
+              return _AdminOrderCard(
+                order: order,
+                onChangeStatus: (status) => _changeStatus(order, status),
+              );
+            },
           ),
         );
       },
     );
   }
+
+  List<UserOrder> _applyFilters(List<UserOrder> orders) {
+    final query = _searchController.text.trim().toLowerCase();
+    final now = DateTime.now();
+
+    return orders.where((order) {
+      final matchesStatus = _statusFilter == 'all'
+          ? true
+          : order.status.trim().toLowerCase() == _statusFilter;
+
+      final matchesDate = switch (_dateFilter) {
+        _DateFilter.all => true,
+        _DateFilter.today => _isSameDay(order.createdAt, now),
+        _DateFilter.last7Days => _isWithinLastDays(order.createdAt, now, 7),
+        _DateFilter.last30Days => _isWithinLastDays(order.createdAt, now, 30),
+      };
+
+      final matchesQuery = query.isEmpty
+          ? true
+          : _matchesSearch(order, query);
+
+      return matchesStatus && matchesDate && matchesQuery;
+    }).toList(growable: false);
+  }
+
+  bool _matchesSearch(UserOrder order, String query) {
+    final normalized = query.replaceAll('#', '').trim();
+    return '${order.id}'.contains(normalized) || '${order.userId}'.contains(normalized);
+  }
+
+  bool _isSameDay(DateTime? date, DateTime now) {
+    if (date == null) return false;
+    final local = date.toLocal();
+    return local.year == now.year &&
+        local.month == now.month &&
+        local.day == now.day;
+  }
+
+  bool _isWithinLastDays(DateTime? date, DateTime now, int days) {
+    if (date == null) return false;
+    final diff = now.difference(date.toLocal());
+    return !diff.isNegative && diff <= Duration(days: days);
+  }
 }
+
+enum _DateFilter { all, today, last7Days, last30Days }
 
 class _AdminOrderCard extends StatelessWidget {
   final UserOrder order;
@@ -294,25 +372,161 @@ class _MetaChip extends StatelessWidget {
   }
 }
 
-class _EmptyOrders extends StatelessWidget {
-  const _EmptyOrders();
+class _EmptyFilteredOrders extends StatelessWidget {
+  const _EmptyFilteredOrders();
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.receipt_long_outlined, size: 42, color: Color(0xFF457B9D)),
-          SizedBox(height: 8),
-          Text(
-            'No hay pedidos',
-            style: TextStyle(
-              color: Color(0xFF1D3557),
-              fontWeight: FontWeight.w700,
-            ),
+    return const Padding(
+      padding: EdgeInsets.only(top: 24),
+      child: Center(
+        child: Text(
+          'No hay pedidos con esos filtros',
+          style: TextStyle(
+            color: Color(0xFF1D3557),
+            fontWeight: FontWeight.w700,
           ),
-        ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OrdersFiltersCard extends StatelessWidget {
+  final TextEditingController searchController;
+  final String statusFilter;
+  final _DateFilter dateFilter;
+  final ValueChanged<String> onSearchChanged;
+  final VoidCallback onClearSearch;
+  final ValueChanged<String> onStatusChanged;
+  final ValueChanged<_DateFilter> onDateChanged;
+
+  const _OrdersFiltersCard({
+    required this.searchController,
+    required this.statusFilter,
+    required this.dateFilter,
+    required this.onSearchChanged,
+    required this.onClearSearch,
+    required this.onStatusChanged,
+    required this.onDateChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 10),
+      elevation: 0,
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+        side: BorderSide(color: Colors.blueGrey.withValues(alpha: 0.15)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Filtros',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1D3557),
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: searchController,
+              onChanged: onSearchChanged,
+              decoration: InputDecoration(
+                hintText: 'Buscar por #pedido o userId...',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: searchController.text.isEmpty
+                    ? null
+                    : IconButton(
+                        onPressed: onClearSearch,
+                        icon: const Icon(Icons.close),
+                      ),
+                filled: true,
+                fillColor: const Color(0xFFF8FAFC),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: Colors.blueGrey.withValues(alpha: 0.15),
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: Colors.blueGrey.withValues(alpha: 0.15),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    initialValue: statusFilter,
+                    decoration: _dropdownDecoration('Estado'),
+                    items: const [
+                      DropdownMenuItem(value: 'all', child: Text('Todos')),
+                      DropdownMenuItem(value: 'pending', child: Text('Pendiente')),
+                      DropdownMenuItem(value: 'completed', child: Text('Completado')),
+                      DropdownMenuItem(value: 'cancelled', child: Text('Cancelado')),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) onStatusChanged(value);
+                    },
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: DropdownButtonFormField<_DateFilter>(
+                    initialValue: dateFilter,
+                    decoration: _dropdownDecoration('Fecha'),
+                    items: const [
+                      DropdownMenuItem(value: _DateFilter.all, child: Text('Todo')),
+                      DropdownMenuItem(value: _DateFilter.today, child: Text('Hoy')),
+                      DropdownMenuItem(
+                        value: _DateFilter.last7Days,
+                        child: Text('7 dias'),
+                      ),
+                      DropdownMenuItem(
+                        value: _DateFilter.last30Days,
+                        child: Text('30 dias'),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) onDateChanged(value);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  InputDecoration _dropdownDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      filled: true,
+      fillColor: const Color(0xFFF8FAFC),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(
+          color: Colors.blueGrey.withValues(alpha: 0.15),
+        ),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(
+          color: Colors.blueGrey.withValues(alpha: 0.15),
+        ),
       ),
     );
   }
