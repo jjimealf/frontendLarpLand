@@ -1,25 +1,12 @@
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:larpland/model/roleplay_event.dart';
-import 'package:larpland/service/api_config.dart';
-import 'package:larpland/service/auth_session.dart';
+import 'package:larpland/service/firebase_backend.dart';
 
 Future<List<RoleplayEvent>> fetchEventList() async {
-  final response = await http.get(
-    Uri.parse('${ApiConfig.baseUrl}/api/events'),
-    headers: _jsonHeaders(),
-  );
-  if (response.statusCode != 200) {
-    throw Exception(
-      'Fallo al cargar eventos (${response.statusCode}): ${response.body}',
-    );
-  }
-
-  final decoded = jsonDecode(response.body);
-  final items = _extractEventList(decoded);
-  return items
-      .whereType<Map<String, dynamic>>()
+  FirebaseBackend.ensureInitialized();
+  final snapshot = await FirebaseBackend.events.orderBy('id').get();
+  return snapshot.docs
+      .map(FirebaseBackend.normalizeSnapshotData)
       .map(RoleplayEvent.fromJson)
       .toList(growable: false);
 }
@@ -30,23 +17,19 @@ Future<RoleplayEvent> addEvent(
   String fechaInicio,
   String fechaFin,
 ) async {
-  final response = await http.post(
-    Uri.parse('${ApiConfig.baseUrl}/api/events'),
-    headers: _jsonHeaders(),
-    body: {
-      'nombre': name,
-      'descripcion': description,
-      'fecha_inicio': fechaInicio,
-      'fecha_fin': fechaFin,
-    },
-  );
-  if (response.statusCode == 200) {
-    return RoleplayEvent.fromJson(
-      jsonDecode(response.body) as Map<String, dynamic>,
-    );
-  } else {
-    throw Exception('Fallo al agregar evento');
-  }
+  FirebaseBackend.ensureInitialized();
+  final id = await FirebaseBackend.nextNumericId('events');
+  final data = <String, dynamic>{
+    'id': id,
+    'nombre': name,
+    'descripcion': description,
+    'fecha_inicio': fechaInicio,
+    'fecha_fin': fechaFin,
+    'created_at': DateTime.now().toUtc().toIso8601String(),
+    'updated_at': DateTime.now().toUtc().toIso8601String(),
+  };
+  await FirebaseBackend.events.add(data);
+  return RoleplayEvent.fromJson(data);
 }
 
 Future<void> updateEvent(
@@ -56,73 +39,19 @@ Future<void> updateEvent(
   required String fechaInicio,
   required String fechaFin,
 }) async {
-  final response = await http.put(
-    Uri.parse('${ApiConfig.baseUrl}/api/events/$id'),
-    headers: _jsonHeaders(),
-    body: {
-      'nombre': name,
-      'descripcion': description,
-      'fecha_inicio': fechaInicio,
-      'fecha_fin': fechaFin,
-    },
-  );
-
-  if (response.statusCode != 200) {
-    throw Exception(
-      'Fallo al actualizar evento (${response.statusCode}): ${response.body}',
-    );
-  }
+  FirebaseBackend.ensureInitialized();
+  final ref = await FirebaseBackend.findRefByNumericId(FirebaseBackend.events, id);
+  await ref.set(<String, dynamic>{
+    'nombre': name,
+    'descripcion': description,
+    'fecha_inicio': fechaInicio,
+    'fecha_fin': fechaFin,
+    'updated_at': DateTime.now().toUtc().toIso8601String(),
+  }, SetOptions(merge: true));
 }
 
 Future<void> deleteEvent(int id) async {
-  final response = await http.delete(
-    Uri.parse('${ApiConfig.baseUrl}/api/events/$id'),
-    headers: _jsonHeaders(),
-  );
-
-  if (response.statusCode != 200 && response.statusCode != 204) {
-    throw Exception(
-      'Fallo al borrar evento (${response.statusCode}): ${response.body}',
-    );
-  }
-}
-
-Map<String, String> _jsonHeaders() {
-  final headers = <String, String>{
-    'Accept': 'application/json',
-  };
-  final token = AuthSession.token;
-  if (token != null && token.isNotEmpty) {
-    headers['Authorization'] = 'Bearer $token';
-  }
-  return headers;
-}
-
-List<dynamic> _extractEventList(dynamic decoded) {
-  if (decoded is List) {
-    return decoded;
-  }
-  if (decoded is Map<String, dynamic>) {
-    final data = decoded['data'];
-    if (data is List) {
-      return data;
-    }
-    if (data is Map<String, dynamic>) {
-      final nested = _extractEventList(data);
-      if (nested.isNotEmpty) {
-        return nested;
-      }
-    }
-    final events = decoded['events'];
-    if (events is List) {
-      return events;
-    }
-    if (events is Map<String, dynamic>) {
-      final nested = _extractEventList(events);
-      if (nested.isNotEmpty) {
-        return nested;
-      }
-    }
-  }
-  return const [];
+  FirebaseBackend.ensureInitialized();
+  final ref = await FirebaseBackend.findRefByNumericId(FirebaseBackend.events, id);
+  await ref.delete();
 }

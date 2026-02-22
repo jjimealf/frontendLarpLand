@@ -1,35 +1,74 @@
-import 'dart:convert';
-
+import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 import 'package:larpland/model/login.dart';
-import 'package:http/http.dart' as http;
-import 'package:larpland/service/api_config.dart';
 import 'package:larpland/service/auth_session.dart';
+import 'package:larpland/service/firebase_backend.dart';
 
 Future<Login> login(String email, String password) async {
-  final response = await http.post(
-    Uri.parse('${ApiConfig.baseUrl}/api/login'),
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    },
-    body: jsonEncode({
-      'email': email,
-      'password': password,
-    }),
-  );
-  if (response.statusCode == 200) {
-    try {
-      final decoded = jsonDecode(response.body);
-      if (decoded is Map<String, dynamic>) {
-        final loginResult = Login.fromJson(decoded);
-        AuthSession.token = loginResult.token;
-        return loginResult;
-      }
-      throw Exception('Respuesta de login no es un objeto JSON');
-    } catch (e) {
-      throw Exception('Login invalido. Respuesta: ${response.body}');
+  FirebaseBackend.ensureInitialized();
+
+  try {
+    final credential = await FirebaseBackend.auth.signInWithEmailAndPassword(
+      email: email.trim(),
+      password: password,
+    );
+    final user = credential.user;
+    if (user == null) {
+      throw fb_auth.FirebaseAuthException(
+        code: 'user-not-found',
+        message: 'No se pudo recuperar el usuario autenticado.',
+      );
     }
-  } else {
-    throw Exception('Login fallido (${response.statusCode}): ${response.body}');
+
+    final profile = await FirebaseBackend.ensureUserProfile(firebaseUser: user);
+    final rol = _asInt(profile['rol']) ?? 0;
+    final userId = _asInt(profile['id']);
+    if (userId == null) {
+      throw Exception('El perfil del usuario no contiene un id numerico.');
+    }
+
+    final idToken = await user.getIdToken();
+    final result = Login(
+      status: 'success',
+      rol: rol,
+      message: 'Login exitoso',
+      userId: userId,
+      token: idToken,
+    );
+
+    AuthSession.bind(
+      idToken: idToken,
+      uid: user.uid,
+      sessionUserId: userId,
+      sessionRol: rol,
+    );
+    return result;
+  } on fb_auth.FirebaseAuthException catch (e) {
+    throw Exception(_firebaseAuthMessage(e));
+  }
+}
+
+int? _asInt(dynamic value) {
+  return switch (value) {
+    int v => v,
+    num v => v.toInt(),
+    String v => int.tryParse(v),
+    _ => null,
+  };
+}
+
+String _firebaseAuthMessage(fb_auth.FirebaseAuthException e) {
+  switch (e.code) {
+    case 'invalid-credential':
+    case 'wrong-password':
+    case 'user-not-found':
+      return 'Correo o contrasena incorrectos.';
+    case 'invalid-email':
+      return 'El correo electronico no es valido.';
+    case 'too-many-requests':
+      return 'Demasiados intentos. Intenta de nuevo mas tarde.';
+    case 'network-request-failed':
+      return 'Sin conexion a internet.';
+    default:
+      return e.message ?? 'No se pudo iniciar sesion.';
   }
 }

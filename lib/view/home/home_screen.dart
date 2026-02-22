@@ -37,8 +37,9 @@ class _HomeScreenState extends State<HomeScreen> {
         leading: IconButton(
           icon: const Icon(Icons.logout),
           tooltip: 'Cerrar sesion',
-          onPressed: () {
-            AuthSession.token = null;
+          onPressed: () async {
+            await AuthSession.signOut();
+            if (!context.mounted) return;
             Navigator.pop(context);
           },
         ),

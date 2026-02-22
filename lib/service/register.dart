@@ -1,60 +1,47 @@
-import 'dart:convert';
-
+import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 import 'package:larpland/model/user.dart';
-import 'package:http/http.dart' as http;
-import 'package:larpland/service/api_config.dart';
+import 'package:larpland/service/firebase_backend.dart';
 
 Future<User> register(String name, String email, String password) async {
-  final response = await http.post(
-    Uri.parse('${ApiConfig.baseUrl}/api/register'),
-    headers: {
-      'Accept': 'application/json',
-    },
-    body: {
-      'name': name,
-      'email': email,
-      'password': password,
-    },
-  );
+  FirebaseBackend.ensureInitialized();
 
-  if (response.statusCode == 201 || response.statusCode == 200) {
-    final decoded = jsonDecode(response.body);
-    if (decoded is Map<String, dynamic>) {
-      final userPayload = _extractUserPayload(decoded);
-      if (userPayload != null) {
-        return User.fromJson(userPayload);
-      }
+  try {
+    final credential = await FirebaseBackend.auth.createUserWithEmailAndPassword(
+      email: email.trim(),
+      password: password,
+    );
+    final createdUser = credential.user;
+    if (createdUser == null) {
+      throw Exception('No se pudo crear el usuario en Firebase Auth.');
     }
 
-    // Some backends return only a success message on register.
-    return User(id: 0, name: name, email: email);
-  } else {
-    throw Exception(
-      'Registro fallido (${response.statusCode}): ${response.body}',
+    final trimmedName = name.trim();
+    if (trimmedName.isNotEmpty) {
+      await createdUser.updateDisplayName(trimmedName);
+    }
+
+    final profile = await FirebaseBackend.ensureUserProfile(
+      firebaseUser: createdUser,
+      fallbackName: trimmedName,
     );
+    await FirebaseBackend.auth.signOut();
+    return User.fromJson(profile);
+  } on fb_auth.FirebaseAuthException catch (e) {
+    throw Exception(_firebaseAuthMessage(e));
   }
 }
 
-Map<String, dynamic>? _extractUserPayload(Map<String, dynamic> json) {
-  if (json['id'] != null && json['name'] != null && json['email'] != null) {
-    return json;
+String _firebaseAuthMessage(fb_auth.FirebaseAuthException e) {
+  switch (e.code) {
+    case 'email-already-in-use':
+      return 'El correo ya esta registrado.';
+    case 'invalid-email':
+      return 'El correo electronico no es valido.';
+    case 'weak-password':
+      return 'La contrasena es demasiado debil.';
+    case 'network-request-failed':
+      return 'Sin conexion a internet.';
+    default:
+      return e.message ?? 'No se pudo completar el registro.';
   }
-
-  final user = json['user'];
-  if (user is Map<String, dynamic>) {
-    return user;
-  }
-
-  final data = json['data'];
-  if (data is Map<String, dynamic>) {
-    if (data['id'] != null && data['name'] != null && data['email'] != null) {
-      return data;
-    }
-    final nestedUser = data['user'];
-    if (nestedUser is Map<String, dynamic>) {
-      return nestedUser;
-    }
-  }
-
-  return null;
 }

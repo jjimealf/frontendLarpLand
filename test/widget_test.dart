@@ -12,7 +12,7 @@ import 'package:larpland/main.dart';
 
 void main() {
   testWidgets('MyApp muestra la pantalla de login', (WidgetTester tester) async {
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(const MyApp(firebaseReady: true));
 
     expect(find.text('Bienvenido de vuelta'), findsOneWidget);
     expect(find.byType(TextFormField), findsNWidgets(2));
