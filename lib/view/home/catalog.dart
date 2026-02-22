@@ -19,11 +19,20 @@ class CatalogScreen extends StatefulWidget {
 }
 
 class _CatalogScreenState extends State<CatalogScreen> {
+  static const int _pageSize = 12;
+
   late Future<List<Product>> productsFuture;
   final TextEditingController searchController = TextEditingController();
+  final TextEditingController minPriceController = TextEditingController();
+  final TextEditingController maxPriceController = TextEditingController();
   final List<Product> _allProducts = [];
   List<Product> _filteredProducts = [];
   Timer? _debounce;
+  bool _showAdvancedFilters = false;
+  bool _onlyInStock = false;
+  String _selectedCategory = 'Todas';
+  _CatalogSort _sort = _CatalogSort.relevance;
+  int _visibleCount = _pageSize;
 
   @override
   void initState() {
@@ -36,6 +45,8 @@ class _CatalogScreenState extends State<CatalogScreen> {
   void dispose() {
     _debounce?.cancel();
     searchController.dispose();
+    minPriceController.dispose();
+    maxPriceController.dispose();
     super.dispose();
   }
 
@@ -44,7 +55,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
     _allProducts
       ..clear()
       ..addAll(fetched);
-    _filteredProducts = List<Product>.from(_allProducts);
+    _applyFilters();
     return _filteredProducts;
   }
 
@@ -57,37 +68,100 @@ class _CatalogScreenState extends State<CatalogScreen> {
       _allProducts
         ..clear()
         ..addAll(fetched);
-      _filterProducts(immediate: true);
+      _applyFilters();
     });
   }
 
   void _onSearchChanged() {
     _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 250), _filterProducts);
+    _debounce = Timer(const Duration(milliseconds: 250), _applyFilters);
   }
 
-  void _filterProducts({bool immediate = false}) {
+  void _applyFilters() {
     final query = searchController.text.trim().toLowerCase();
+    final minPrice = _parseNullablePrice(minPriceController.text);
+    final maxPrice = _parseNullablePrice(maxPriceController.text);
     if (!mounted) {
       return;
     }
 
     setState(() {
-      if (query.isEmpty) {
-        _filteredProducts = List<Product>.from(_allProducts);
-      } else {
-        _filteredProducts = _allProducts
-            .where(
-              (item) => item.nombre.toLowerCase().contains(query) ||
-                  item.categoria.toLowerCase().contains(query),
-            )
-            .toList(growable: false);
-      }
-    });
+      final filtered = _allProducts.where((item) {
+        final matchesQuery = query.isEmpty ||
+            item.nombre.toLowerCase().contains(query) ||
+            item.categoria.toLowerCase().contains(query);
+        final matchesCategory = _selectedCategory == 'Todas' ||
+            item.categoria.toLowerCase() == _selectedCategory.toLowerCase();
+        final matchesStock = !_onlyInStock || item.cantidad > 0;
+        final price = _parsePrice(item.precio);
+        final matchesMin = minPrice == null || price >= minPrice;
+        final matchesMax = maxPrice == null || price <= maxPrice;
+        return matchesQuery &&
+            matchesCategory &&
+            matchesStock &&
+            matchesMin &&
+            matchesMax;
+      }).toList(growable: false);
 
-    if (!immediate && query.isNotEmpty && _filteredProducts.isEmpty) {
-      // keep quiet state; no snackbar noise while typing.
+      _filteredProducts = _sortProducts(filtered);
+      _visibleCount = (_filteredProducts.length < _pageSize)
+          ? _filteredProducts.length
+          : _pageSize;
+    });
+  }
+
+  List<Product> _sortProducts(List<Product> source) {
+    final sorted = List<Product>.from(source);
+    switch (_sort) {
+      case _CatalogSort.relevance:
+        break;
+      case _CatalogSort.priceAsc:
+        sorted.sort((a, b) => _parsePrice(a.precio).compareTo(_parsePrice(b.precio)));
+      case _CatalogSort.priceDesc:
+        sorted.sort((a, b) => _parsePrice(b.precio).compareTo(_parsePrice(a.precio)));
+      case _CatalogSort.ratingDesc:
+        sorted.sort((a, b) => _parseRating(b.valoracionTotal).compareTo(_parseRating(a.valoracionTotal)));
+      case _CatalogSort.stockDesc:
+        sorted.sort((a, b) => b.cantidad.compareTo(a.cantidad));
+      case _CatalogSort.nameAsc:
+        sorted.sort((a, b) => a.nombre.toLowerCase().compareTo(b.nombre.toLowerCase()));
     }
+    return sorted;
+  }
+
+  List<Product> get _visibleProducts {
+    final end = _visibleCount.clamp(0, _filteredProducts.length);
+    return _filteredProducts.take(end).toList(growable: false);
+  }
+
+  bool get _canLoadMore => _visibleCount < _filteredProducts.length;
+
+  List<String> get _categories {
+    final values = _allProducts
+        .map((p) => p.categoria.trim())
+        .where((c) => c.isNotEmpty)
+        .toSet()
+        .toList()
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    return ['Todas', ...values];
+  }
+
+  void _clearAdvancedFilters() {
+    setState(() {
+      _onlyInStock = false;
+      _selectedCategory = 'Todas';
+      _sort = _CatalogSort.relevance;
+      minPriceController.clear();
+      maxPriceController.clear();
+    });
+    _applyFilters();
+  }
+
+  void _loadMore() {
+    if (!_canLoadMore) return;
+    setState(() {
+      _visibleCount = (_visibleCount + _pageSize).clamp(0, _filteredProducts.length);
+    });
   }
 
   Future<void> _openProductDetail(Product product) async {
@@ -101,6 +175,37 @@ class _CatalogScreenState extends State<CatalogScreen> {
       ),
     );
     await _refreshProducts();
+  }
+
+  InputDecoration _filterDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      filled: true,
+      fillColor: const Color(0xFFF8FAFC),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(
+          color: Colors.blueGrey.withValues(alpha: 0.15),
+        ),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(
+          color: Colors.blueGrey.withValues(alpha: 0.15),
+        ),
+      ),
+    );
+  }
+
+  String _sortLabel(_CatalogSort sort) {
+    return switch (sort) {
+      _CatalogSort.relevance => 'Relevancia',
+      _CatalogSort.priceAsc => 'Precio asc',
+      _CatalogSort.priceDesc => 'Precio desc',
+      _CatalogSort.ratingDesc => 'Valoracion',
+      _CatalogSort.stockDesc => 'Stock',
+      _CatalogSort.nameAsc => 'Nombre A-Z',
+    };
   }
 
   @override
@@ -182,7 +287,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                       : IconButton(
                           onPressed: () {
                             searchController.clear();
-                            _filterProducts(immediate: true);
+                            _applyFilters();
                           },
                           icon: const Icon(Icons.close),
                         ),
@@ -201,6 +306,149 @@ class _CatalogScreenState extends State<CatalogScreen> {
                     ),
                   ),
                 ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            setState(() {
+                              _showAdvancedFilters = !_showAdvancedFilters;
+                            });
+                          },
+                          icon: Icon(
+                            _showAdvancedFilters
+                                ? Icons.tune
+                                : Icons.tune_outlined,
+                          ),
+                          label: Text(
+                            _showAdvancedFilters
+                                ? 'Ocultar filtros'
+                                : 'Filtros avanzados',
+                          ),
+                        ),
+                      ),
+                      if (_selectedCategory != 'Todas' ||
+                          _onlyInStock ||
+                          _sort != _CatalogSort.relevance ||
+                          minPriceController.text.trim().isNotEmpty ||
+                          maxPriceController.text.trim().isNotEmpty) ...[
+                        const SizedBox(width: 8),
+                        TextButton(
+                          onPressed: _clearAdvancedFilters,
+                          child: const Text('Limpiar'),
+                        ),
+                      ],
+                    ],
+                  ),
+                  if (_showAdvancedFilters) ...[
+                    const SizedBox(height: 8),
+                    Card(
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        side: BorderSide(
+                          color: Colors.blueGrey.withValues(alpha: 0.15),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: DropdownButtonFormField<String>(
+                                    initialValue: _categories.contains(_selectedCategory)
+                                        ? _selectedCategory
+                                        : 'Todas',
+                                    decoration: _filterDecoration('Categoria'),
+                                    items: _categories
+                                        .map(
+                                          (category) => DropdownMenuItem<String>(
+                                            value: category,
+                                            child: Text(category),
+                                          ),
+                                        )
+                                        .toList(growable: false),
+                                    onChanged: (value) {
+                                      if (value == null) return;
+                                      setState(() => _selectedCategory = value);
+                                      _applyFilters();
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: DropdownButtonFormField<_CatalogSort>(
+                                    initialValue: _sort,
+                                    decoration: _filterDecoration('Ordenar por'),
+                                    items: _CatalogSort.values
+                                        .map(
+                                          (sort) => DropdownMenuItem<_CatalogSort>(
+                                            value: sort,
+                                            child: Text(_sortLabel(sort)),
+                                          ),
+                                        )
+                                        .toList(growable: false),
+                                    onChanged: (value) {
+                                      if (value == null) return;
+                                      setState(() => _sort = value);
+                                      _applyFilters();
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    controller: minPriceController,
+                                    keyboardType:
+                                        const TextInputType.numberWithOptions(
+                                      decimal: true,
+                                    ),
+                                    onChanged: (_) => _applyFilters(),
+                                    decoration: _filterDecoration('Precio min'),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: TextField(
+                                    controller: maxPriceController,
+                                    keyboardType:
+                                        const TextInputType.numberWithOptions(
+                                      decimal: true,
+                                    ),
+                                    onChanged: (_) => _applyFilters(),
+                                    decoration: _filterDecoration('Precio max'),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            SwitchListTile.adaptive(
+                              value: _onlyInStock,
+                              contentPadding: EdgeInsets.zero,
+                              title: const Text('Solo con stock disponible'),
+                              onChanged: (value) {
+                                setState(() => _onlyInStock = value);
+                                _applyFilters();
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
             Expanded(
@@ -298,9 +546,11 @@ class _CatalogScreenState extends State<CatalogScreen> {
                           );
                         }
 
+                        final visibleProducts = _visibleProducts;
+                        final showLoadMoreTile = _canLoadMore;
                         return GridView.builder(
                           padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
-                          itemCount: _filteredProducts.length,
+                          itemCount: visibleProducts.length + (showLoadMoreTile ? 1 : 0),
                           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: crossAxisCount,
                             crossAxisSpacing: crossSpacing,
@@ -308,7 +558,14 @@ class _CatalogScreenState extends State<CatalogScreen> {
                             mainAxisExtent: cardMainAxisExtent,
                           ),
                           itemBuilder: (context, index) {
-                            final product = _filteredProducts[index];
+                            if (showLoadMoreTile && index == visibleProducts.length) {
+                              return _LoadMoreCatalogTile(
+                                remaining: _filteredProducts.length - visibleProducts.length,
+                                onPressed: _loadMore,
+                              );
+                            }
+
+                            final product = visibleProducts[index];
                             final stockColor = product.cantidad > 10
                                 ? Colors.green
                                 : product.cantidad >= 3
@@ -472,6 +729,86 @@ class _CatalogScreenState extends State<CatalogScreen> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  static double _parsePrice(String value) {
+    final normalized = value.replaceAll(',', '.').trim();
+    return double.tryParse(normalized) ?? 0.0;
+  }
+
+  static double? _parseNullablePrice(String value) {
+    final normalized = value.replaceAll(',', '.').trim();
+    if (normalized.isEmpty) return null;
+    return double.tryParse(normalized);
+  }
+
+  static double _parseRating(String value) {
+    final normalized = value.replaceAll(',', '.').trim();
+    return double.tryParse(normalized) ?? 0.0;
+  }
+}
+
+enum _CatalogSort {
+  relevance,
+  priceAsc,
+  priceDesc,
+  ratingDesc,
+  stockDesc,
+  nameAsc,
+}
+
+class _LoadMoreCatalogTile extends StatelessWidget {
+  final int remaining;
+  final VoidCallback onPressed;
+
+  const _LoadMoreCatalogTile({
+    required this.remaining,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+        side: BorderSide(color: Colors.blueGrey.withValues(alpha: 0.15)),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: onPressed,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.expand_more_rounded,
+                size: 34,
+                color: Color(0xFF1D3557),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Cargar mas',
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF1D3557),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '$remaining producto(s) restantes',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.black54,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
