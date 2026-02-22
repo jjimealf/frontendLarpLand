@@ -6,6 +6,16 @@ import 'package:larpland/service/firebase_backend.dart';
 Future<int> createUserOrder({
   required int userId,
   required List<Product> cartItems,
+  required double subtotalAmount,
+  required double shippingAmount,
+  required double totalAmount,
+  String status = 'completed',
+  String? paymentMethod,
+  String? deliveryMethod,
+  String? customerName,
+  String? customerPhone,
+  String? notes,
+  Map<String, dynamic>? shippingAddress,
 }) async {
   FirebaseBackend.ensureInitialized();
   if (cartItems.isEmpty) {
@@ -28,7 +38,7 @@ Future<int> createUserOrder({
       })
       .toList(growable: false);
 
-  final totalAmount = normalizedItems.fold<double>(
+  final computedSubtotal = normalizedItems.fold<double>(
     0,
     (acc, item) => acc + ((item['line_total'] as num?)?.toDouble() ?? 0),
   );
@@ -40,8 +50,17 @@ Future<int> createUserOrder({
   await FirebaseBackend.firestore.collection('orders').add(<String, dynamic>{
     'id': orderId,
     'user_id': userId,
-    'status': 'completed',
+    'status': status,
+    'payment_method': paymentMethod ?? 'card',
+    'delivery_method': deliveryMethod ?? 'standard',
+    if (customerName != null) 'customer_name': customerName,
+    if (customerPhone != null) 'customer_phone': customerPhone,
+    if (notes != null && notes.trim().isNotEmpty) 'notes': notes.trim(),
+    if (shippingAddress != null) 'shipping_address': shippingAddress,
+    'subtotal_amount': subtotalAmount,
+    'shipping_amount': shippingAmount,
     'total_amount': totalAmount,
+    'computed_subtotal_amount': computedSubtotal,
     'total_items': totalItems,
     'items': normalizedItems,
     'created_at': FieldValue.serverTimestamp(),
