@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:larpland/service/auth_session.dart';
 import 'package:larpland/view/home/catalog.dart';
 import 'package:larpland/view/home/event_list.dart';
+import 'package:larpland/view/home/profile.dart';
 
 class HomeScreen extends StatefulWidget {
 
@@ -21,6 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final screen = [
       CatalogScreen(userId: widget.userId),
       EventPage(userId: widget.userId),
+      UserProfileScreen(userId: widget.userId),
     ];
 
     return Scaffold(
@@ -78,6 +80,11 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Icon(Icons.event_outlined),
               activeIcon: Icon(Icons.event),
               label: 'Eventos',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              activeIcon: Icon(Icons.person),
+              label: 'Perfil',
             ),
           ],
         ),
