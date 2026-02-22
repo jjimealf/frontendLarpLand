@@ -19,6 +19,7 @@ class _EventPageState extends State<EventPage> {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   final List<Timer> _notificationTimers = <Timer>[];
+  final Set<int> _notifiedEventIds = <int>{};
   late Future<List<RoleplayEvent>> futureEvents;
 
   @override
@@ -69,29 +70,25 @@ class _EventPageState extends State<EventPage> {
   }
 
   Future<void> scheduleEventNotifications() async {
-    final now = DateTime.now();
     final events = await futureEvents;
 
     for (final event in events) {
-      final eventDate = DateTime.tryParse(event.fechaInicio);
-      if (eventDate == null) {
+      if (!event.isRegistered) {
         continue;
       }
-
-      final remaining = eventDate.difference(now);
-      if (remaining > Duration.zero && remaining <= const Duration(hours: 24)) {
-        _notificationTimers.add(
-          Timer(remaining, () => unawaited(scheduleNotification(event))),
-        );
-      }
+      _scheduleNotificationForEvent(event);
     }
   }
 
   Future<void> scheduleNotification(RoleplayEvent event) async {
+    if (_notifiedEventIds.contains(event.id)) {
+      return;
+    }
+
     await flutterLocalNotificationsPlugin.show(
       event.id,
       event.name,
-      event.fechaInicio,
+      'Comienza el ${event.fechaInicio}',
       const NotificationDetails(
         android: AndroidNotificationDetails(
           'event_channel_id',
@@ -103,6 +100,7 @@ class _EventPageState extends State<EventPage> {
         ),
       ),
     );
+    _notifiedEventIds.add(event.id);
   }
 
   @override
@@ -168,6 +166,7 @@ class _EventPageState extends State<EventPage> {
       setState(() {
         event.isRegistered = true;
       });
+      _scheduleNotificationForEvent(event);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Inscripcion realizada')),
       );
@@ -177,5 +176,29 @@ class _EventPageState extends State<EventPage> {
         SnackBar(content: Text(e.toString())),
       );
     }
+  }
+
+  void _scheduleNotificationForEvent(RoleplayEvent event) {
+    final now = DateTime.now();
+    final eventDate = DateTime.tryParse(event.fechaInicio);
+    if (eventDate == null) {
+      return;
+    }
+
+    final remaining = eventDate.difference(now);
+    if (remaining <= Duration.zero) {
+      return;
+    }
+
+    const twentyFourHours = Duration(hours: 24);
+    if (remaining <= twentyFourHours) {
+      unawaited(scheduleNotification(event));
+      return;
+    }
+
+    final triggerIn = remaining - twentyFourHours;
+    _notificationTimers.add(
+      Timer(triggerIn, () => unawaited(scheduleNotification(event))),
+    );
   }
 }
