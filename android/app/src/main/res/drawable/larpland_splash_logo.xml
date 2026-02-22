@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+
+    <path
+        android:fillColor="#1D3557"
+        android:pathData="M20,12h80a8,8 0 0 1 8,8v80a8,8 0 0 1 -8,8h-80a8,8 0 0 1 -8,-8v-80a8,8 0 0 1 8,-8z" />
+
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M20,12h80a8,8 0 0 1 8,8v80a8,8 0 0 1 -8,8h-80a8,8 0 0 1 -8,-8v-80a8,8 0 0 1 8,-8z"
+        android:strokeColor="#A8DADC"
+        android:strokeLineJoin="round"
+        android:strokeWidth="4" />
+
+    <!-- Monogram L -->
+    <path
+        android:fillColor="#E9C46A"
+        android:pathData="M38,32h10v44h20v10H38z" />
+
+    <!-- Sword blade -->
+    <path
+        android:fillColor="#E9C46A"
+        android:pathData="M78,27l4,-6 4,6v42h-8z" />
+
+    <!-- Crossguard -->
+    <path
+        android:fillColor="#A8DADC"
+        android:pathData="M70,46h24v6H70z" />
+
+    <!-- Grip -->
+    <path
+        android:fillColor="#E9C46A"
+        android:pathData="M79,52h6v20h-6z" />
+
+    <!-- Pommel -->
+    <path
+        android:fillColor="#E9C46A"
+        android:pathData="M82,77m-4,0a4,4 0 1,0 8,0a4,4 0 1,0 -8,0" />
+</vector>

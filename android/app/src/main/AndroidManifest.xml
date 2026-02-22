@@ -5,7 +5,8 @@
     <application
         android:label="larpland"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@drawable/larpland_splash_logo"
+        android:roundIcon="@drawable/larpland_splash_logo">
         <activity
             android:name=".MainActivity"
             android:exported="true"
