@@ -20,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final screen = [
       CatalogScreen(userId: widget.userId),
-      const EventPage()
+      EventPage(userId: widget.userId),
     ];
 
     return Scaffold(

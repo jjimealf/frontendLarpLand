@@ -7,7 +7,9 @@ import 'package:larpland/model/roleplay_event.dart';
 import 'package:larpland/service/roleplay_event.dart';
 
 class EventPage extends StatefulWidget {
-  const EventPage({super.key});
+  final int userId;
+
+  const EventPage({super.key, required this.userId});
 
   @override
   State<EventPage> createState() => _EventPageState();
@@ -22,7 +24,7 @@ class _EventPageState extends State<EventPage> {
   @override
   void initState() {
     super.initState();
-    futureEvents = fetchEventList();
+    futureEvents = fetchEventList(userId: widget.userId);
     unawaited(_bootstrapNotifications());
   }
 
@@ -123,19 +125,7 @@ class _EventPageState extends State<EventPage> {
                   event: event,
                   margin: const EdgeInsets.only(bottom: 10),
                   trailingAction: ElevatedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        if (event.isRegistered) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Ya estas inscrito en este evento'),
-                            ),
-                          );
-                        } else {
-                          event.isRegistered = true;
-                        }
-                      });
-                    },
+                    onPressed: () => _registerInEvent(event),
                     icon: Icon(
                       event.isRegistered
                           ? Icons.verified_outlined
@@ -162,5 +152,30 @@ class _EventPageState extends State<EventPage> {
         },
       ),
     );
+  }
+
+  Future<void> _registerInEvent(RoleplayEvent event) async {
+    if (event.isRegistered) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ya estas inscrito en este evento')),
+      );
+      return;
+    }
+
+    try {
+      await registerUserInEvent(userId: widget.userId, eventId: event.id);
+      if (!mounted) return;
+      setState(() {
+        event.isRegistered = true;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Inscripcion realizada')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
   }
 }
