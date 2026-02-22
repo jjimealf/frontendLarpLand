@@ -41,3 +41,19 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Firebase / credentials (local and server-side secrets)
+# NOTE: `lib/firebase_options.dart` is intentionally NOT ignored because
+# FlutterFire client config is commonly versioned in app repos.
+**/service-account*.json
+**/*serviceAccount*.json
+**/firebase-adminsdk*.json
+**/.env
+**/.env.*
+!.env.example
+
+# Optional: keep Firebase platform config files out of git if your team
+# distributes them out-of-band. Remove these lines if you want them versioned.
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+macos/Runner/GoogleService-Info.plist
