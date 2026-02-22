@@ -124,19 +124,25 @@ class _ProductListState extends State<ProductList> {
                       ((crossAxisCount - 1) * crossSpacing);
                   final cardWidth = availableWidth / crossAxisCount;
                   final imageHeight = (cardWidth * 0.72).clamp(96.0, 170.0);
-                  const contentHeight = 108.0;
-                  final computedAspectRatio =
-                      cardWidth / (imageHeight + contentHeight);
-                  final childAspectRatio = crossAxisCount <= 2
-                      ? computedAspectRatio.clamp(0.50, 0.58)
-                      : computedAspectRatio.clamp(0.56, 0.66);
+                  final textScale =
+                      MediaQuery.textScalerOf(context).scale(1.0);
+                  final extraHeightForTextScale =
+                      ((textScale - 1).clamp(0.0, 0.8)) * 36.0;
+                  final baseContentHeight = switch (crossAxisCount) {
+                    4 => 124.0,
+                    3 => 136.0,
+                    _ => 156.0,
+                  };
+                  final cardMainAxisExtent = imageHeight +
+                      baseContentHeight +
+                      extraHeightForTextScale;
                   return GridView.builder(
                     padding: const EdgeInsets.fromLTRB(14, 14, 14, 92),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: crossAxisCount,
                       crossAxisSpacing: crossSpacing,
                       mainAxisSpacing: 12,
-                      childAspectRatio: childAspectRatio,
+                      mainAxisExtent: cardMainAxisExtent,
                     ),
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
@@ -169,6 +175,9 @@ class _ProductListState extends State<ProductList> {
                                   child: Container(
                                     color: const Color(0xFFF1F5F9),
                                     child: SmartNetworkImage(
+                                      key: ValueKey(
+                                        'admin-product-thumb-${product.id}-${product.imagen}',
+                                      ),
                                       imagePath: product.imagen,
                                       height: imageHeight,
                                       fit: BoxFit.contain,
