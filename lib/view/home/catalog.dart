@@ -262,11 +262,18 @@ class _CatalogScreenState extends State<CatalogScreen> {
                             ((crossAxisCount - 1) * crossSpacing);
                         final cardWidth = availableWidth / crossAxisCount;
                         final imageHeight = (cardWidth * 0.62).clamp(95.0, 145.0);
-                        const contentHeight = 196.0;
-                        final computedRatio = cardWidth / (imageHeight + contentHeight);
-                        final childAspectRatio = crossAxisCount <= 2
-                            ? computedRatio.clamp(0.48, 0.54)
-                            : computedRatio.clamp(0.54, 0.62);
+                        final textScale =
+                            MediaQuery.textScalerOf(context).scale(1.0);
+                        final extraHeightForTextScale =
+                            ((textScale - 1).clamp(0.0, 0.8)) * 48.0;
+                        final baseContentHeight = switch (crossAxisCount) {
+                          4 => 208.0,
+                          3 => 220.0,
+                          _ => 242.0,
+                        };
+                        final cardMainAxisExtent = imageHeight +
+                            baseContentHeight +
+                            extraHeightForTextScale;
 
                         if (_filteredProducts.isEmpty) {
                           return ListView(
@@ -298,7 +305,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                             crossAxisCount: crossAxisCount,
                             crossAxisSpacing: crossSpacing,
                             mainAxisSpacing: 10,
-                            childAspectRatio: childAspectRatio,
+                            mainAxisExtent: cardMainAxisExtent,
                           ),
                           itemBuilder: (context, index) {
                             final product = _filteredProducts[index];
