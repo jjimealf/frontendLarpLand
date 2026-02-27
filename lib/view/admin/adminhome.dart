@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:larpland/service/auth_session.dart';
 import 'package:larpland/view/admin/event_list.dart';
 import 'package:larpland/view/admin/orders_list.dart';
@@ -31,11 +31,14 @@ class _AdminHomeState extends State<AdminHome> {
         automaticallyImplyLeading: false,
         elevation: 0,
         centerTitle: true,
-        backgroundColor: const Color(0xFF1D3557),
+        backgroundColor: const Color(0xFF2C4432),
         foregroundColor: Colors.white,
         title: const Text(
           'LarpLand Admin',
-          style: TextStyle(fontWeight: FontWeight.w700),
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
         ),
         leading: IconButton(
           icon: const Icon(Icons.logout),
@@ -52,7 +55,7 @@ class _AdminHomeState extends State<AdminHome> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFFF8FBFF), Color(0xFFEFF4FA)],
+            colors: [Color(0xFFF3EBD4), Color(0xFFE8DABC)],
           ),
         ),
         child: IndexedStack(
@@ -62,7 +65,7 @@ class _AdminHomeState extends State<AdminHome> {
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
-          color: Color(0xFF1D3557),
+          color: Color(0xFF2C4432),
           boxShadow: [
             BoxShadow(
               color: Colors.black26,
@@ -76,8 +79,8 @@ class _AdminHomeState extends State<AdminHome> {
           onTap: (value) => setState(() => selectedIndex = value),
           type: BottomNavigationBarType.fixed,
           elevation: 0,
-          backgroundColor: const Color(0xFF1D3557),
-          selectedItemColor: const Color(0xFFA8DADC),
+          backgroundColor: const Color(0xFF2C4432),
+          selectedItemColor: const Color(0xFFD3BE8A),
           unselectedItemColor: Colors.white70,
           selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
           items: const <BottomNavigationBarItem>[
@@ -107,3 +110,4 @@ class _AdminHomeState extends State<AdminHome> {
     );
   }
 }
+

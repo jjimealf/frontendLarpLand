@@ -49,7 +49,7 @@ class _ProductDetailState extends State<ProductDetail> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFFF8FBFF), Color(0xFFEFF4FA)],
+            colors: [Color(0xFFF3EBD4), Color(0xFFE8DABC)],
           ),
         ),
         child: SafeArea(
@@ -76,7 +76,7 @@ class _ProductDetailState extends State<ProductDetail> {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.blueGrey.withValues(alpha: 0.15)),
+        side: BorderSide(color: const Color(0xFF5C3F2D).withValues(alpha: 0.15)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -88,7 +88,7 @@ class _ProductDetailState extends State<ProductDetail> {
               child: Container(
                 width: double.infinity,
                 height: 220,
-                color: const Color(0xFFF1F5F9),
+                color: const Color(0xFFF3EBD4),
                 child: SmartNetworkImage(
                   imagePath: widget.product.imagen,
                   fit: BoxFit.contain,
@@ -102,7 +102,7 @@ class _ProductDetailState extends State<ProductDetail> {
               style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1D3557),
+                color: Color(0xFF2C4432),
               ),
             ),
             const SizedBox(height: 6),
@@ -139,7 +139,7 @@ class _ProductDetailState extends State<ProductDetail> {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.blueGrey.withValues(alpha: 0.15)),
+        side: BorderSide(color: const Color(0xFF5C3F2D).withValues(alpha: 0.15)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -151,7 +151,7 @@ class _ProductDetailState extends State<ProductDetail> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1D3557),
+                color: Color(0xFF2C4432),
               ),
             ),
             const SizedBox(height: 10),
@@ -199,7 +199,7 @@ class _ProductDetailState extends State<ProductDetail> {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.blueGrey.withValues(alpha: 0.15)),
+        side: BorderSide(color: const Color(0xFF5C3F2D).withValues(alpha: 0.15)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -213,7 +213,7 @@ class _ProductDetailState extends State<ProductDetail> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF1D3557),
+                  color: Color(0xFF2C4432),
                 ),
               ),
               const SizedBox(height: 12),
@@ -272,7 +272,7 @@ class _ProductDetailState extends State<ProductDetail> {
                       : const Icon(Icons.send_outlined),
                   label: Text(_isSubmittingReview ? 'Enviando...' : 'Enviar resena'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1D3557),
+                    backgroundColor: const Color(0xFF2C4432),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
@@ -376,18 +376,18 @@ class _InfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F5F9),
+        color: const Color(0xFFF3EBD4),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: const Color(0xFF1D3557)),
+          Icon(icon, size: 16, color: const Color(0xFF2C4432)),
           const SizedBox(width: 6),
           Text(
             text,
             style: const TextStyle(
-              color: Color(0xFF1D3557),
+              color: Color(0xFF2C4432),
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -396,3 +396,4 @@ class _InfoChip extends StatelessWidget {
     );
   }
 }
+

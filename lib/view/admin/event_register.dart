@@ -218,7 +218,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
       labelText: label,
       prefixIcon: Icon(icon),
       filled: true,
-      fillColor: const Color(0xFFF1F5F9),
+      fillColor: const Color(0xFFF3EBD4),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
@@ -243,7 +243,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF1D3557), Color(0xFF457B9D), Color(0xFFA8DADC)],
+            colors: [Color(0xFF2C4432), Color(0xFF8C3C2F), Color(0xFFD3BE8A)],
           ),
         ),
         child: SafeArea(
@@ -277,7 +277,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                   style: const TextStyle(
                                     fontSize: 24,
                                     fontWeight: FontWeight.w700,
-                                    color: Color(0xFF1D3557),
+                                    color: Color(0xFF2C4432),
                                   ),
                                 ),
                               ),
@@ -384,7 +384,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                       : 'Guardar evento'),
                             ),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF1D3557),
+                              backgroundColor: const Color(0xFF2C4432),
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
@@ -405,3 +405,4 @@ class _AddEventScreenState extends State<AddEventScreen> {
     );
   }
 }
+

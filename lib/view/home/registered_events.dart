@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:larpland/component/event_card.dart';
 import 'package:larpland/model/roleplay_event.dart';
 import 'package:larpland/service/roleplay_event.dart';
@@ -40,7 +40,7 @@ class _RegisteredEventsScreenState extends State<RegisteredEventsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Cancelar inscripcion'),
-        content: Text('¿Quieres cancelar tu inscripcion en "${event.name}"?'),
+        content: Text('Â¿Quieres cancelar tu inscripcion en "${event.name}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -85,7 +85,7 @@ class _RegisteredEventsScreenState extends State<RegisteredEventsScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFFF8FBFF), Color(0xFFEFF4FA)],
+            colors: [Color(0xFFF3EBD4), Color(0xFFE8DABC)],
           ),
         ),
         child: FutureBuilder<List<RoleplayEvent>>(
@@ -104,7 +104,7 @@ class _RegisteredEventsScreenState extends State<RegisteredEventsScreen> {
                       const Icon(
                         Icons.error_outline,
                         size: 42,
-                        color: Color(0xFF1D3557),
+                        color: Color(0xFF2C4432),
                       ),
                       const SizedBox(height: 10),
                       Text(
@@ -133,14 +133,14 @@ class _RegisteredEventsScreenState extends State<RegisteredEventsScreen> {
                     Icon(
                       Icons.event_busy_outlined,
                       size: 52,
-                      color: Color(0xFF457B9D),
+                      color: Color(0xFF8C3C2F),
                     ),
                     SizedBox(height: 10),
                     Center(
                       child: Text(
                         'Todavia no te has inscrito en eventos',
                         style: TextStyle(
-                          color: Color(0xFF1D3557),
+                          color: Color(0xFF2C4432),
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -179,7 +179,7 @@ class _RegisteredEventsScreenState extends State<RegisteredEventsScreen> {
                           const Icon(
                             Icons.verified_outlined,
                             size: 18,
-                            color: Color(0xFF1D3557),
+                            color: Color(0xFF2C4432),
                           ),
                           const SizedBox(width: 6),
                           OutlinedButton.icon(
@@ -217,14 +217,14 @@ class _RegisteredEventsScreenState extends State<RegisteredEventsScreen> {
                           Icon(
                             Icons.check_circle_outline,
                             size: 18,
-                            color: Color(0xFF457B9D),
+                            color: Color(0xFF8C3C2F),
                           ),
                           SizedBox(width: 6),
                           Text(
                             'Asistio / Finalizado',
                             style: TextStyle(
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF457B9D),
+                              color: Color(0xFF8C3C2F),
                             ),
                           ),
                         ],
@@ -268,14 +268,14 @@ class _SectionHeader extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: const Color(0xFF1D3557)),
+          Icon(icon, size: 18, color: const Color(0xFF2C4432)),
           const SizedBox(width: 8),
           Text(
             '$title ($count)',
             style: const TextStyle(
               fontWeight: FontWeight.w700,
               fontSize: 16,
-              color: Color(0xFF1D3557),
+              color: Color(0xFF2C4432),
             ),
           ),
         ],
@@ -299,7 +299,7 @@ class _SectionEmpty extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.blueGrey.withValues(alpha: 0.12)),
+          border: Border.all(color: const Color(0xFF5C3F2D).withValues(alpha: 0.12)),
         ),
         child: Text(
           message,
@@ -309,3 +309,4 @@ class _SectionEmpty extends StatelessWidget {
     );
   }
 }
+

@@ -162,7 +162,7 @@ class _EventPageState extends State<EventPage> {
                       event.isRegistered ? 'Inscrito' : 'Inscribirse',
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1D3557),
+                      backgroundColor: const Color(0xFF2C4432),
                       foregroundColor: Colors.white,
                     ),
                   ),
@@ -230,3 +230,4 @@ class _EventPageState extends State<EventPage> {
     );
   }
 }
+

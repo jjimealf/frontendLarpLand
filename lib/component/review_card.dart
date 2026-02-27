@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:larpland/model/user.dart';
 import 'package:larpland/model/user_review.dart';
 import 'package:larpland/service/user.dart';
@@ -32,7 +32,7 @@ class _ReviewCardState extends State<ReviewCard> {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.blueGrey.withValues(alpha: 0.12)),
+        side: BorderSide(color: const Color(0xFF5C3F2D).withValues(alpha: 0.12)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -98,11 +98,11 @@ class _ReviewHeader extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 16,
-          backgroundColor: const Color(0xFFEAF2F8),
+          backgroundColor: const Color(0xFFF3EBD4),
           child: Text(
             initial,
             style: const TextStyle(
-              color: Color(0xFF1D3557),
+              color: Color(0xFF2C4432),
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -120,7 +120,7 @@ class _ReviewHeader extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF1D3557),
+                  color: Color(0xFF2C4432),
                 ),
               ),
               if (createdAt != null)
@@ -175,3 +175,4 @@ class _ReviewHeader extends StatelessWidget {
     return '$d/$m/$y';
   }
 }
+

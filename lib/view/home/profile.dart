@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
+﻿import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 import 'package:flutter/material.dart';
 import 'package:larpland/model/order.dart';
 import 'package:larpland/model/user.dart';
@@ -57,7 +57,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xFFF8FBFF), Color(0xFFEFF4FA)],
+          colors: [Color(0xFFF3EBD4), Color(0xFFE8DABC)],
         ),
       ),
       child: FutureBuilder<_ProfileData>(
@@ -77,7 +77,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     const Icon(
                       Icons.error_outline,
                       size: 42,
-                      color: Color(0xFF1D3557),
+                      color: Color(0xFF2C4432),
                     ),
                     const SizedBox(height: 10),
                     Text(
@@ -114,8 +114,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   icon: const Icon(Icons.edit_outlined),
                   label: const Text('Editar perfil'),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFF1D3557),
-                    side: const BorderSide(color: Color(0xFF1D3557)),
+                    foregroundColor: const Color(0xFF2C4432),
+                    side: const BorderSide(color: Color(0xFF2C4432)),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
                 ),
@@ -183,7 +183,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   icon: const Icon(Icons.event_available_outlined),
                   label: const Text('Ver mis eventos inscritos'),
                   style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFF457B9D),
+                    backgroundColor: const Color(0xFF8C3C2F),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
@@ -202,7 +202,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   icon: const Icon(Icons.receipt_long_outlined),
                   label: const Text('Ver mis pedidos'),
                   style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFF1D3557),
+                    backgroundColor: const Color(0xFF2C4432),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
@@ -377,7 +377,7 @@ class _ProfileHeaderCard extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.blueGrey.withValues(alpha: 0.15)),
+        side: BorderSide(color: const Color(0xFF5C3F2D).withValues(alpha: 0.15)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -385,7 +385,7 @@ class _ProfileHeaderCard extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 28,
-              backgroundColor: const Color(0xFF1D3557),
+              backgroundColor: const Color(0xFF2C4432),
               child: Text(
                 initial,
                 style: const TextStyle(
@@ -405,7 +405,7 @@ class _ProfileHeaderCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF1D3557),
+                      color: Color(0xFF2C4432),
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -440,7 +440,7 @@ class _SectionCard extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.blueGrey.withValues(alpha: 0.15)),
+        side: BorderSide(color: const Color(0xFF5C3F2D).withValues(alpha: 0.15)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -452,7 +452,7 @@ class _SectionCard extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1D3557),
+                color: Color(0xFF2C4432),
               ),
             ),
             const SizedBox(height: 10),
@@ -482,13 +482,13 @@ class _InfoRow extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         decoration: BoxDecoration(
-          color: const Color(0xFFF1F5F9),
+          color: const Color(0xFFF3EBD4),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, size: 18, color: const Color(0xFF1D3557)),
+            Icon(icon, size: 18, color: const Color(0xFF2C4432)),
             const SizedBox(width: 8),
             Expanded(
               child: Column(
@@ -506,7 +506,7 @@ class _InfoRow extends StatelessWidget {
                     value,
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF1D3557),
+                      color: Color(0xFF2C4432),
                     ),
                   ),
                 ],
@@ -532,7 +532,7 @@ class _OrderRow extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         decoration: BoxDecoration(
-          color: const Color(0xFFF1F5F9),
+          color: const Color(0xFFF3EBD4),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
@@ -540,7 +540,7 @@ class _OrderRow extends StatelessWidget {
             const Icon(
               Icons.receipt_long_outlined,
               size: 18,
-              color: Color(0xFF1D3557),
+              color: Color(0xFF2C4432),
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -551,12 +551,12 @@ class _OrderRow extends StatelessWidget {
                     'Pedido #${order.id}',
                     style: const TextStyle(
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF1D3557),
+                      color: Color(0xFF2C4432),
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '$date · ${order.totalItems} item(s) · ${order.totalAmount.toStringAsFixed(2)} €',
+                    '$date Â· ${order.totalItems} item(s) Â· ${order.totalAmount.toStringAsFixed(2)} â‚¬',
                     style: const TextStyle(
                       fontSize: 12,
                       color: Colors.black54,
@@ -597,7 +597,7 @@ class _OrderStatusBadge extends StatelessWidget {
     final (label, bg, fg) = switch (normalized) {
       'completed' => ('Completado', const Color(0xFFE8F5E9), const Color(0xFF2E7D32)),
       'pending' => ('Pendiente', const Color(0xFFFFF8E1), const Color(0xFFF9A825)),
-      _ => (status, const Color(0xFFEAF2F8), const Color(0xFF1D3557)),
+      _ => (status, const Color(0xFFF3EBD4), const Color(0xFF2C4432)),
     };
 
     return Container(
@@ -617,3 +617,4 @@ class _OrderStatusBadge extends StatelessWidget {
     );
   }
 }
+

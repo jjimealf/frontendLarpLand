@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:larpland/component/event_card.dart';
 import 'package:larpland/model/roleplay_event.dart';
 import 'package:larpland/service/roleplay_event.dart';
@@ -37,7 +37,7 @@ class _EventScreenState extends State<EventScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Borrar evento'),
-        content: Text('¿Seguro que quieres borrar "${event.name}"?'),
+        content: Text('Â¿Seguro que quieres borrar "${event.name}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -140,7 +140,7 @@ class _EventScreenState extends State<EventScreen> {
           right: 16,
           child: FloatingActionButton(
             onPressed: _openEventForm,
-            backgroundColor: const Color(0xFF1D3557),
+            backgroundColor: const Color(0xFF2C4432),
             foregroundColor: Colors.white,
             tooltip: 'Agregar evento',
             heroTag: 'add_event',
@@ -165,12 +165,12 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 40, color: const Color(0xFF457B9D)),
+          Icon(icon, size: 40, color: const Color(0xFF8C3C2F)),
           const SizedBox(height: 8),
           Text(
             message,
             style: const TextStyle(
-              color: Color(0xFF1D3557),
+              color: Color(0xFF2C4432),
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -179,3 +179,4 @@ class _EmptyState extends StatelessWidget {
     );
   }
 }
+

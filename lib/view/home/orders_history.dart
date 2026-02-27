@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:larpland/component/smart_network_image.dart';
 import 'package:larpland/model/order.dart';
 import 'package:larpland/service/order.dart';
@@ -40,7 +40,7 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFFF8FBFF), Color(0xFFEFF4FA)],
+            colors: [Color(0xFFF3EBD4), Color(0xFFE8DABC)],
           ),
         ),
         child: FutureBuilder<List<UserOrder>>(
@@ -59,7 +59,7 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
                       const Icon(
                         Icons.error_outline,
                         size: 42,
-                        color: Color(0xFF1D3557),
+                        color: Color(0xFF2C4432),
                       ),
                       const SizedBox(height: 10),
                       Text(
@@ -88,14 +88,14 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
                     Icon(
                       Icons.receipt_long_outlined,
                       size: 52,
-                      color: Color(0xFF457B9D),
+                      color: Color(0xFF8C3C2F),
                     ),
                     SizedBox(height: 10),
                     Center(
                       child: Text(
                         'Todavia no tienes pedidos',
                         style: TextStyle(
-                          color: Color(0xFF1D3557),
+                          color: Color(0xFF2C4432),
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -133,7 +133,7 @@ class _OrderCard extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
-        side: BorderSide(color: Colors.blueGrey.withValues(alpha: 0.15)),
+        side: BorderSide(color: const Color(0xFF5C3F2D).withValues(alpha: 0.15)),
       ),
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
@@ -142,13 +142,13 @@ class _OrderCard extends StatelessWidget {
           childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
           leading: const Icon(
             Icons.receipt_long_outlined,
-            color: Color(0xFF1D3557),
+            color: Color(0xFF2C4432),
           ),
           title: Text(
             'Pedido #${order.id}',
             style: const TextStyle(
               fontWeight: FontWeight.w700,
-              color: Color(0xFF1D3557),
+              color: Color(0xFF2C4432),
             ),
           ),
           subtitle: Text(
@@ -205,7 +205,7 @@ class _OrderItemRow extends StatelessWidget {
             child: Container(
               width: 52,
               height: 52,
-              color: const Color(0xFFF1F5F9),
+              color: const Color(0xFFF3EBD4),
               child: item.imageUrl.trim().isEmpty
                   ? const Icon(Icons.image_not_supported_outlined)
                   : SmartNetworkImage(
@@ -227,7 +227,7 @@ class _OrderItemRow extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF1D3557),
+                    color: Color(0xFF2C4432),
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -246,7 +246,7 @@ class _OrderItemRow extends StatelessWidget {
             '${item.lineTotal.toStringAsFixed(2)} EUR',
             style: const TextStyle(
               fontWeight: FontWeight.w700,
-              color: Color(0xFF1D3557),
+              color: Color(0xFF2C4432),
             ),
           ),
         ],
@@ -274,7 +274,7 @@ class _OrderStatusBadge extends StatelessWidget {
           const Color(0xFFFFF8E1),
           const Color(0xFFF9A825),
         ),
-      _ => (status, const Color(0xFFEAF2F8), const Color(0xFF1D3557)),
+      _ => (status, const Color(0xFFF3EBD4), const Color(0xFF2C4432)),
     };
 
     return Container(
@@ -294,3 +294,4 @@ class _OrderStatusBadge extends StatelessWidget {
     );
   }
 }
+

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:larpland/model/roleplay_event.dart';
 
 class EventCard extends StatelessWidget {
@@ -15,14 +15,17 @@ class EventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final surface = Theme.of(context).colorScheme.surface;
+    final ink = Theme.of(context).colorScheme.onSurface;
+
     return Card(
       margin: margin,
       elevation: 0,
-      color: Colors.white,
+      color: surface.withValues(alpha: 0.94),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
         side: BorderSide(
-          color: Colors.blueGrey.withValues(alpha: 0.15),
+          color: const Color(0xFF5C3F2D).withValues(alpha: 0.22),
         ),
       ),
       child: Padding(
@@ -37,12 +40,12 @@ class EventCard extends StatelessWidget {
                   width: 38,
                   height: 38,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEAF2F8),
+                    color: const Color(0xFFF3EBD4),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Icon(
                     Icons.event_available_outlined,
-                    color: Color(0xFF1D3557),
+                    color: Color(0xFF2C4432),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -54,7 +57,7 @@ class EventCard extends StatelessWidget {
                     style: const TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 16,
-                      color: Color(0xFF1D3557),
+                      color: Color(0xFF2C4432),
                     ),
                   ),
                 ),
@@ -65,7 +68,7 @@ class EventCard extends StatelessWidget {
               event.description,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: Colors.black54),
+              style: TextStyle(color: ink.withValues(alpha: 0.72)),
             ),
             const SizedBox(height: 10),
             Wrap(
@@ -127,19 +130,19 @@ class _DateChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F5F9),
+        color: const Color(0xFFF3EBD4),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: const Color(0xFF1D3557)),
+          Icon(icon, size: 16, color: const Color(0xFF2C4432)),
           const SizedBox(width: 6),
           Text(
             '$label: $value',
             style: const TextStyle(
               fontSize: 12,
-              color: Color(0xFF1D3557),
+              color: Color(0xFF2C4432),
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -148,3 +151,4 @@ class _DateChip extends StatelessWidget {
     );
   }
 }
+

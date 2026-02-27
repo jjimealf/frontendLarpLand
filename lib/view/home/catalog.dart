@@ -185,13 +185,13 @@ class _CatalogScreenState extends State<CatalogScreen> {
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(
-          color: Colors.blueGrey.withValues(alpha: 0.15),
+          color: const Color(0xFF5C3F2D).withValues(alpha: 0.15),
         ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(
-          color: Colors.blueGrey.withValues(alpha: 0.15),
+          color: const Color(0xFF5C3F2D).withValues(alpha: 0.15),
         ),
       ),
     );
@@ -270,7 +270,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFFF8FBFF), Color(0xFFEFF4FA)],
+            colors: [Color(0xFFF3EBD4), Color(0xFFE8DABC)],
           ),
         ),
         child: Column(
@@ -296,13 +296,13 @@ class _CatalogScreenState extends State<CatalogScreen> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide(
-                      color: Colors.blueGrey.withValues(alpha: 0.25),
+                      color: const Color(0xFF5C3F2D).withValues(alpha: 0.25),
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide(
-                      color: Colors.blueGrey.withValues(alpha: 0.2),
+                      color: const Color(0xFF5C3F2D).withValues(alpha: 0.2),
                     ),
                   ),
                 ),
@@ -353,7 +353,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                         side: BorderSide(
-                          color: Colors.blueGrey.withValues(alpha: 0.15),
+                          color: const Color(0xFF5C3F2D).withValues(alpha: 0.15),
                         ),
                       ),
                       child: Padding(
@@ -469,7 +469,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                             const Icon(
                               Icons.error_outline,
                               size: 40,
-                              color: Color(0xFF1D3557),
+                              color: Color(0xFF2C4432),
                             ),
                             const SizedBox(height: 8),
                             Text(
@@ -530,14 +530,14 @@ class _CatalogScreenState extends State<CatalogScreen> {
                               Icon(
                                 Icons.search_off_outlined,
                                 size: 44,
-                                color: Color(0xFF457B9D),
+                                color: Color(0xFF8C3C2F),
                               ),
                               SizedBox(height: 10),
                               Center(
                                 child: Text(
                                   'No hay productos con ese criterio',
                                   style: TextStyle(
-                                    color: Color(0xFF1D3557),
+                                    color: Color(0xFF2C4432),
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -580,7 +580,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),
                                   side: BorderSide(
-                                    color: Colors.blueGrey.withValues(alpha: 0.15),
+                                    color: const Color(0xFF5C3F2D).withValues(alpha: 0.15),
                                   ),
                                 ),
                                 child: Padding(
@@ -591,7 +591,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                       ClipRRect(
                                         borderRadius: BorderRadius.circular(10),
                                         child: Container(
-                                          color: const Color(0xFFF1F5F9),
+                                          color: const Color(0xFFF3EBD4),
                                           child: SmartNetworkImage(
                                             key: ValueKey(
                                               'product-thumb-${product.id}-${product.imagen}',
@@ -610,7 +610,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                         style: const TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.w700,
-                                          color: Color(0xFF1D3557),
+                                          color: Color(0xFF2C4432),
                                         ),
                                       ),
                                       const SizedBox(height: 4),
@@ -706,7 +706,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                           icon: const Icon(Icons.add_shopping_cart),
                                           label: const Text('Agregar'),
                                           style: FilledButton.styleFrom(
-                                            backgroundColor: const Color(0xFF1D3557),
+                                            backgroundColor: const Color(0xFF2C4432),
                                             foregroundColor: Colors.white,
                                             padding: const EdgeInsets.symmetric(
                                               vertical: 10,
@@ -775,7 +775,7 @@ class _LoadMoreCatalogTile extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
-        side: BorderSide(color: Colors.blueGrey.withValues(alpha: 0.15)),
+        side: BorderSide(color: const Color(0xFF5C3F2D).withValues(alpha: 0.15)),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(14),
@@ -788,14 +788,14 @@ class _LoadMoreCatalogTile extends StatelessWidget {
               const Icon(
                 Icons.expand_more_rounded,
                 size: 34,
-                color: Color(0xFF1D3557),
+                color: Color(0xFF2C4432),
               ),
               const SizedBox(height: 8),
               const Text(
                 'Cargar mas',
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF1D3557),
+                  color: Color(0xFF2C4432),
                 ),
               ),
               const SizedBox(height: 4),
@@ -814,3 +814,4 @@ class _LoadMoreCatalogTile extends StatelessWidget {
     );
   }
 }
+

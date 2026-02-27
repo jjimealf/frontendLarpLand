@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:larpland/component/smart_network_image.dart';
 import 'package:larpland/model/product.dart';
 import 'package:larpland/provider/cart_provider.dart';
@@ -63,7 +63,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFFF8FBFF), Color(0xFFEFF4FA)],
+            colors: [Color(0xFFF3EBD4), Color(0xFFE8DABC)],
           ),
         ),
         child: cartItems.isEmpty
@@ -299,13 +299,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(
-          color: Colors.blueGrey.withValues(alpha: 0.2),
+          color: const Color(0xFF5C3F2D).withValues(alpha: 0.2),
         ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(
-          color: Colors.blueGrey.withValues(alpha: 0.2),
+          color: const Color(0xFF5C3F2D).withValues(alpha: 0.2),
         ),
       ),
     );
@@ -466,7 +466,7 @@ class _CheckoutSection extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
-        side: BorderSide(color: Colors.blueGrey.withValues(alpha: 0.15)),
+        side: BorderSide(color: const Color(0xFF5C3F2D).withValues(alpha: 0.15)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -478,7 +478,7 @@ class _CheckoutSection extends StatelessWidget {
               style: const TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 16,
-                color: Color(0xFF1D3557),
+                color: Color(0xFF2C4432),
               ),
             ),
             const SizedBox(height: 10),
@@ -509,7 +509,7 @@ class _CheckoutLineItem extends StatelessWidget {
             child: Container(
               width: 60,
               height: 60,
-              color: const Color(0xFFF1F5F9),
+              color: const Color(0xFFF3EBD4),
               child: SmartNetworkImage(
                 key: ValueKey('checkout-${item.id}-${item.imagen}'),
                 imagePath: item.imagen,
@@ -530,7 +530,7 @@ class _CheckoutLineItem extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF1D3557),
+                    color: Color(0xFF2C4432),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -546,7 +546,7 @@ class _CheckoutLineItem extends StatelessWidget {
             '${lineTotal.toStringAsFixed(2)} EUR',
             style: const TextStyle(
               fontWeight: FontWeight.w800,
-              color: Color(0xFF1D3557),
+              color: Color(0xFF2C4432),
             ),
           ),
         ],
@@ -632,7 +632,7 @@ class _DeliveryTile extends StatelessWidget {
       onChanged: (value) {
         if (value != null) onChanged(value);
       },
-      secondary: Icon(icon, color: const Color(0xFF1D3557)),
+      secondary: Icon(icon, color: const Color(0xFF2C4432)),
       title: Text(title),
       subtitle: Text(subtitle),
     );
@@ -666,7 +666,7 @@ class _PaymentMethodTile extends StatelessWidget {
       onChanged: (value) {
         if (value != null) onChanged(value);
       },
-      secondary: Icon(icon, color: const Color(0xFF1D3557)),
+      secondary: Icon(icon, color: const Color(0xFF2C4432)),
       title: Text(title),
       subtitle: Text(subtitle),
     );
@@ -682,13 +682,13 @@ class _PickupInfo extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFEAF2F8),
+        color: const Color(0xFFF3EBD4),
         borderRadius: BorderRadius.circular(10),
       ),
       child: const Text(
-        'Recogida en tienda: recibirás una confirmacion cuando tu pedido este listo.',
+        'Recogida en tienda: recibirÃ¡s una confirmacion cuando tu pedido este listo.',
         style: TextStyle(
-          color: Color(0xFF1D3557),
+          color: Color(0xFF2C4432),
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -718,7 +718,7 @@ class _CheckoutFooter extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(
-          top: BorderSide(color: Colors.blueGrey.withValues(alpha: 0.18)),
+          top: BorderSide(color: const Color(0xFF5C3F2D).withValues(alpha: 0.18)),
         ),
       ),
       child: SafeArea(
@@ -746,7 +746,7 @@ class _CheckoutFooter extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF1D3557),
+                    color: Color(0xFF2C4432),
                   ),
                 ),
               ],
@@ -770,7 +770,7 @@ class _CheckoutFooter extends StatelessWidget {
                   isSubmitting ? 'Procesando...' : 'Confirmar compra',
                 ),
                 style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xFF1D3557),
+                  backgroundColor: const Color(0xFF2C4432),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
@@ -802,7 +802,7 @@ class _AmountRow extends StatelessWidget {
           '${value.toStringAsFixed(2)} EUR',
           style: const TextStyle(
             fontWeight: FontWeight.w700,
-            color: Color(0xFF1D3557),
+            color: Color(0xFF2C4432),
           ),
         ),
       ],
@@ -824,7 +824,7 @@ class _EmptyCheckout extends StatelessWidget {
             Icon(
               Icons.receipt_long_outlined,
               size: 50,
-              color: Color(0xFF457B9D),
+              color: Color(0xFF8C3C2F),
             ),
             SizedBox(height: 10),
             Text(
@@ -833,7 +833,7 @@ class _EmptyCheckout extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1D3557),
+                color: Color(0xFF2C4432),
               ),
             ),
           ],
@@ -842,3 +842,4 @@ class _EmptyCheckout extends StatelessWidget {
     );
   }
 }
+

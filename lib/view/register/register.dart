@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use, use_build_context_synchronously
+﻿// ignore_for_file: deprecated_member_use, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:larpland/model/user.dart';
@@ -96,7 +96,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF1D3557), Color(0xFF457B9D), Color(0xFFA8DADC)],
+            colors: [Color(0xFF2C4432), Color(0xFF8C3C2F), Color(0xFFD3BE8A)],
           ),
         ),
         child: SafeArea(
@@ -127,7 +127,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           const Icon(
                             Icons.person_add_alt_1_outlined,
                             size: 48,
-                            color: Color(0xFF1D3557),
+                            color: Color(0xFF2C4432),
                           ),
                           const SizedBox(height: 12),
                           const Text(
@@ -136,7 +136,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF1D3557),
+                              color: Color(0xFF2C4432),
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -162,7 +162,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               labelText: 'Nombre',
                               prefixIcon: const Icon(Icons.person_outline),
                               filled: true,
-                              fillColor: const Color(0xFFF1F5F9),
+                              fillColor: const Color(0xFFF3EBD4),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -194,7 +194,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               labelText: 'Email',
                               prefixIcon: const Icon(Icons.alternate_email),
                               filled: true,
-                              fillColor: const Color(0xFFF1F5F9),
+                              fillColor: const Color(0xFFF3EBD4),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -238,7 +238,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                               ),
                               filled: true,
-                              fillColor: const Color(0xFFF1F5F9),
+                              fillColor: const Color(0xFFF3EBD4),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -259,7 +259,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             icon: const Icon(Icons.app_registration),
                             label: const Text('Registrarme'),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF1D3557),
+                              backgroundColor: const Color(0xFF2C4432),
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
@@ -280,3 +280,4 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 }
+

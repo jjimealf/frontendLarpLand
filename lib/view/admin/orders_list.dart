@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:larpland/model/order.dart';
 import 'package:larpland/service/order.dart';
 import 'package:larpland/util/error_message.dart';
@@ -70,7 +70,7 @@ class _OrdersAdminScreenState extends State<OrdersAdminScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.error_outline, color: Color(0xFF1D3557), size: 40),
+                  const Icon(Icons.error_outline, color: Color(0xFF2C4432), size: 40),
                   const SizedBox(height: 8),
                   Text(
                     uiErrorMessage(snapshot.error!),
@@ -195,7 +195,7 @@ class _AdminOrderCard extends StatelessWidget {
       color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
-        side: BorderSide(color: Colors.blueGrey.withValues(alpha: 0.15)),
+        side: BorderSide(color: const Color(0xFF5C3F2D).withValues(alpha: 0.15)),
       ),
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
@@ -206,14 +206,14 @@ class _AdminOrderCard extends StatelessWidget {
             'Pedido #${order.id}',
             style: const TextStyle(
               fontWeight: FontWeight.w700,
-              color: Color(0xFF1D3557),
+              color: Color(0xFF2C4432),
             ),
           ),
           subtitle: Text(
-            'Usuario #${order.userId} · ${_formatDate(order.createdAt)} · ${order.totalAmount.toStringAsFixed(2)} EUR',
+            'Usuario #${order.userId} Â· ${_formatDate(order.createdAt)} Â· ${order.totalAmount.toStringAsFixed(2)} EUR',
             style: const TextStyle(fontSize: 12),
           ),
-          leading: const Icon(Icons.receipt_long_outlined, color: Color(0xFF1D3557)),
+          leading: const Icon(Icons.receipt_long_outlined, color: Color(0xFF2C4432)),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -295,7 +295,7 @@ class _OrderItemMiniRow extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF1D3557),
+                color: Color(0xFF2C4432),
               ),
             ),
           ),
@@ -322,7 +322,7 @@ class _StatusBadge extends StatelessWidget {
       'completed' => ('Completado', const Color(0xFFE8F5E9), const Color(0xFF2E7D32)),
       'pending' => ('Pendiente', const Color(0xFFFFF8E1), const Color(0xFFF9A825)),
       'cancelled' => ('Cancelado', const Color(0xFFFFEBEE), const Color(0xFFC62828)),
-      _ => (status, const Color(0xFFEAF2F8), const Color(0xFF1D3557)),
+      _ => (status, const Color(0xFFF3EBD4), const Color(0xFF2C4432)),
     };
 
     return Container(
@@ -350,20 +350,20 @@ class _MetaChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F5F9),
+        color: const Color(0xFFF3EBD4),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: const Color(0xFF1D3557)),
+          Icon(icon, size: 16, color: const Color(0xFF2C4432)),
           const SizedBox(width: 6),
           Text(
             text,
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF1D3557),
+              color: Color(0xFF2C4432),
             ),
           ),
         ],
@@ -383,7 +383,7 @@ class _EmptyFilteredOrders extends StatelessWidget {
         child: Text(
           'No hay pedidos con esos filtros',
           style: TextStyle(
-            color: Color(0xFF1D3557),
+            color: Color(0xFF2C4432),
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -419,7 +419,7 @@ class _OrdersFiltersCard extends StatelessWidget {
       color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
-        side: BorderSide(color: Colors.blueGrey.withValues(alpha: 0.15)),
+        side: BorderSide(color: const Color(0xFF5C3F2D).withValues(alpha: 0.15)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -430,7 +430,7 @@ class _OrdersFiltersCard extends StatelessWidget {
               'Filtros',
               style: TextStyle(
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1D3557),
+                color: Color(0xFF2C4432),
                 fontSize: 16,
               ),
             ),
@@ -452,13 +452,13 @@ class _OrdersFiltersCard extends StatelessWidget {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
-                    color: Colors.blueGrey.withValues(alpha: 0.15),
+                    color: const Color(0xFF5C3F2D).withValues(alpha: 0.15),
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
-                    color: Colors.blueGrey.withValues(alpha: 0.15),
+                    color: const Color(0xFF5C3F2D).withValues(alpha: 0.15),
                   ),
                 ),
               ),
@@ -519,15 +519,16 @@ class _OrdersFiltersCard extends StatelessWidget {
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(
-          color: Colors.blueGrey.withValues(alpha: 0.15),
+          color: const Color(0xFF5C3F2D).withValues(alpha: 0.15),
         ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(
-          color: Colors.blueGrey.withValues(alpha: 0.15),
+          color: const Color(0xFF5C3F2D).withValues(alpha: 0.15),
         ),
       ),
     );
   }
 }
+

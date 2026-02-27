@@ -32,7 +32,7 @@ class CartScreen extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFFF8FBFF), Color(0xFFEFF4FA)],
+            colors: [Color(0xFFF3EBD4), Color(0xFFE8DABC)],
           ),
         ),
         child: cartItems.isEmpty
@@ -56,7 +56,7 @@ class CartScreen extends StatelessWidget {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
                             side: BorderSide(
-                              color: Colors.blueGrey.withValues(alpha: 0.15),
+                              color: const Color(0xFF5C3F2D).withValues(alpha: 0.15),
                             ),
                           ),
                           child: Padding(
@@ -68,7 +68,7 @@ class CartScreen extends StatelessWidget {
                                   child: Container(
                                     width: 76,
                                     height: 76,
-                                    color: const Color(0xFFF1F5F9),
+                                    color: const Color(0xFFF3EBD4),
                                     child: SmartNetworkImage(
                                       imagePath: item.imagen,
                                       height: 76,
@@ -87,7 +87,7 @@ class CartScreen extends StatelessWidget {
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
                                           fontWeight: FontWeight.w700,
-                                          color: Color(0xFF1D3557),
+                                          color: Color(0xFF2C4432),
                                         ),
                                       ),
                                       const SizedBox(height: 4),
@@ -122,7 +122,7 @@ class CartScreen extends StatelessWidget {
                                               vertical: 4,
                                             ),
                                             decoration: BoxDecoration(
-                                              color: const Color(0xFFF1F5F9),
+                                              color: const Color(0xFFF3EBD4),
                                               borderRadius: BorderRadius.circular(8),
                                             ),
                                             child: Text(
@@ -165,7 +165,7 @@ class CartScreen extends StatelessWidget {
                       color: Colors.white,
                       border: Border(
                         top: BorderSide(
-                          color: Colors.blueGrey.withValues(alpha: 0.18),
+                          color: const Color(0xFF5C3F2D).withValues(alpha: 0.18),
                         ),
                       ),
                     ),
@@ -189,7 +189,7 @@ class CartScreen extends StatelessWidget {
                                 style: const TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.w800,
-                                  color: Color(0xFF1D3557),
+                                  color: Color(0xFF2C4432),
                                 ),
                               ),
                             ],
@@ -209,7 +209,7 @@ class CartScreen extends StatelessWidget {
                               icon: const Icon(Icons.payment_outlined),
                               label: const Text('Continuar al checkout'),
                               style: FilledButton.styleFrom(
-                                backgroundColor: const Color(0xFF1D3557),
+                                backgroundColor: const Color(0xFF2C4432),
                                 foregroundColor: Colors.white,
                                 padding: const EdgeInsets.symmetric(vertical: 12),
                               ),
@@ -247,12 +247,12 @@ class _QtyButton extends StatelessWidget {
       width: 30,
       height: 30,
       decoration: BoxDecoration(
-        color: const Color(0xFFEAF2F8),
+        color: const Color(0xFFF3EBD4),
         borderRadius: BorderRadius.circular(8),
       ),
       child: IconButton(
         padding: EdgeInsets.zero,
-        icon: Icon(icon, size: 16, color: const Color(0xFF1D3557)),
+        icon: Icon(icon, size: 16, color: const Color(0xFF2C4432)),
         onPressed: onPressed,
       ),
     );
@@ -275,7 +275,7 @@ class _EmptyCart extends StatelessWidget {
             const Icon(
               Icons.remove_shopping_cart_outlined,
               size: 52,
-              color: Color(0xFF457B9D),
+              color: Color(0xFF8C3C2F),
             ),
             const SizedBox(height: 10),
             const Text(
@@ -283,7 +283,7 @@ class _EmptyCart extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1D3557),
+                color: Color(0xFF2C4432),
               ),
             ),
             const SizedBox(height: 6),
@@ -304,3 +304,4 @@ class _EmptyCart extends StatelessWidget {
     );
   }
 }
+

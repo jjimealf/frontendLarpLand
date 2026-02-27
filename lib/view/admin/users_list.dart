@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:larpland/model/user.dart';
 import 'package:larpland/service/user.dart';
 
@@ -47,12 +47,12 @@ class _UsersListState extends State<UsersList> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                   side: BorderSide(
-                    color: Colors.blueGrey.withValues(alpha: 0.15),
+                    color: const Color(0xFF5C3F2D).withValues(alpha: 0.15),
                   ),
                 ),
                 child: ListTile(
                   leading: CircleAvatar(
-                    backgroundColor: const Color(0xFF1D3557),
+                    backgroundColor: const Color(0xFF2C4432),
                     child: Text(
                       user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
                       style: const TextStyle(
@@ -99,12 +99,12 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 40, color: const Color(0xFF457B9D)),
+          Icon(icon, size: 40, color: const Color(0xFF8C3C2F)),
           const SizedBox(height: 8),
           Text(
             message,
             style: const TextStyle(
-              color: Color(0xFF1D3557),
+              color: Color(0xFF2C4432),
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -113,3 +113,4 @@ class _EmptyState extends StatelessWidget {
     );
   }
 }
+

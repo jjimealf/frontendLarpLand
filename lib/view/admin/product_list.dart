@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 import 'package:larpland/component/smart_network_image.dart';
 import 'package:larpland/model/product.dart';
@@ -43,7 +43,7 @@ class _ProductListState extends State<ProductList> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Borrar producto'),
-        content: Text('¿Seguro que quieres borrar "${product.nombre}"?'),
+        content: Text('Â¿Seguro que quieres borrar "${product.nombre}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -162,7 +162,7 @@ class _ProductListState extends State<ProductList> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
                             side: BorderSide(
-                              color: Colors.blueGrey.withValues(alpha: 0.15),
+                              color: const Color(0xFF5C3F2D).withValues(alpha: 0.15),
                             ),
                           ),
                           child: Padding(
@@ -173,7 +173,7 @@ class _ProductListState extends State<ProductList> {
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(10),
                                   child: Container(
-                                    color: const Color(0xFFF1F5F9),
+                                    color: const Color(0xFFF3EBD4),
                                     child: SmartNetworkImage(
                                       key: ValueKey(
                                         'admin-product-thumb-${product.id}-${product.imagen}',
@@ -295,7 +295,7 @@ class _ProductListState extends State<ProductList> {
           right: 16,
           child: FloatingActionButton(
             onPressed: _openProductForm,
-            backgroundColor: const Color(0xFF1D3557),
+            backgroundColor: const Color(0xFF2C4432),
             foregroundColor: Colors.white,
             heroTag: 'addProduct',
             tooltip: 'Nuevo Producto',
@@ -319,12 +319,12 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 40, color: const Color(0xFF457B9D)),
+          Icon(icon, size: 40, color: const Color(0xFF8C3C2F)),
           const SizedBox(height: 8),
           Text(
             message,
             style: const TextStyle(
-              color: Color(0xFF1D3557),
+              color: Color(0xFF2C4432),
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -333,3 +333,4 @@ class _EmptyState extends StatelessWidget {
     );
   }
 }
+
