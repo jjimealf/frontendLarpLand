@@ -2,6 +2,10 @@
 
 Aplicacion Flutter para gestion de tienda y eventos de rol en vivo (LARP), con roles de usuario y administrador.
 
+## Contexto academico
+
+Este repositorio corresponde a mi proyecto del Grado Superior de DAM (Desarrollo de Aplicaciones Multiplataforma).
+
 ## Ramas disponibles
 
 - `master`: version original con backend Laravel (API REST).
