@@ -474,7 +474,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'No se pudo cargar el catalogo:\n${snapshot.error}',
+                              'No se pudo cargar el catalogo:\n${uiErrorMessage(snapshot.error!)}',
                               textAlign: TextAlign.center,
                               style: const TextStyle(color: Colors.black54),
                             ),

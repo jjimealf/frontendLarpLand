@@ -81,7 +81,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      '${snapshot.error}',
+                      uiErrorMessage(snapshot.error!),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 12),

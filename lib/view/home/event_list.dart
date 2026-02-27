@@ -81,7 +81,9 @@ class _EventPageState extends State<EventPage> {
     const InitializationSettings initializationSettings =
         InitializationSettings(android: initializationSettingsAndroid);
 
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    await flutterLocalNotificationsPlugin.initialize(
+      settings: initializationSettings,
+    );
   }
 
   Future<void> onDidReceiveLocalNotification(
@@ -114,10 +116,10 @@ class _EventPageState extends State<EventPage> {
     }
 
     await flutterLocalNotificationsPlugin.show(
-      event.id,
-      event.name,
-      'Comienza el ${event.fechaInicio}',
-      const NotificationDetails(
+      id: event.id,
+      title: event.name,
+      body: 'Comienza el ${event.fechaInicio}',
+      notificationDetails: const NotificationDetails(
         android: AndroidNotificationDetails(
           'event_channel_id',
           'Eventos',
@@ -170,7 +172,7 @@ class _EventPageState extends State<EventPage> {
               },
             );
           } else if (snapshot.hasError) {
-            return Center(child: Text('${snapshot.error}'));
+            return Center(child: Text(uiErrorMessage(snapshot.error!)));
           }
           return const Center(
             child: CircularProgressIndicator(),

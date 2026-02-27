@@ -2,6 +2,7 @@
 import 'package:larpland/component/smart_network_image.dart';
 import 'package:larpland/model/order.dart';
 import 'package:larpland/service/order.dart';
+import 'package:larpland/util/error_message.dart';
 
 class OrdersHistoryScreen extends StatefulWidget {
   final int userId;
@@ -63,7 +64,7 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        '${snapshot.error}',
+                        uiErrorMessage(snapshot.error!),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 12),

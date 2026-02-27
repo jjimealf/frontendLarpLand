@@ -50,13 +50,14 @@ Future<User> updateCurrentUserProfile({
     );
   }
 
+  var emailToPersist = trimmedEmail;
   try {
     if ((firebaseUser.displayName ?? '') != trimmedName) {
       await firebaseUser.updateDisplayName(trimmedName);
     }
     if ((firebaseUser.email ?? '') != trimmedEmail) {
-      // ignore: deprecated_member_use
-      await firebaseUser.updateEmail(trimmedEmail);
+      await firebaseUser.verifyBeforeUpdateEmail(trimmedEmail);
+      emailToPersist = firebaseUser.email ?? trimmedEmail;
     }
     await firebaseUser.reload();
   } on fb_auth.FirebaseAuthException catch (e) {
@@ -71,7 +72,7 @@ Future<User> updateCurrentUserProfile({
     final ref = await FirebaseBackend.findRefByNumericId(FirebaseBackend.users, userId);
     await ref.set(<String, dynamic>{
       'name': trimmedName,
-      'email': trimmedEmail,
+      'email': emailToPersist,
       'updated_at': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
   } on FirebaseException catch (e) {

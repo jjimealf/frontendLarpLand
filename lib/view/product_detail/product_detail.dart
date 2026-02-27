@@ -163,7 +163,7 @@ class _ProductDetailState extends State<ProductDetail> {
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
+                  return Text('Error: ${uiErrorMessage(snapshot.error!)}');
                 }
 
                 final reviews = snapshot.data ?? const <ProductReviews>[];

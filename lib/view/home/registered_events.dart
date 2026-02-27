@@ -108,7 +108,7 @@ class _RegisteredEventsScreenState extends State<RegisteredEventsScreen> {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        '${snapshot.error}',
+                        uiErrorMessage(snapshot.error!),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 12),
