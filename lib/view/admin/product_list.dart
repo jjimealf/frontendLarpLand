@@ -3,6 +3,7 @@
 import 'package:larpland/component/smart_network_image.dart';
 import 'package:larpland/model/product.dart';
 import 'package:larpland/service/product.dart';
+import 'package:larpland/util/error_message.dart';
 import 'package:larpland/view/product_detail/product_detail.dart';
 import 'package:larpland/view/admin/product_register.dart';
 
@@ -78,7 +79,7 @@ class _ProductListState extends State<ProductList> {
         return;
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No se pudo borrar el producto: $e')),
+        SnackBar(content: Text('No se pudo borrar el producto: ${uiErrorMessage(e)}')),
       );
     }
   }

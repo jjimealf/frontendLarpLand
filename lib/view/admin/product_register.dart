@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:larpland/component/smart_network_image.dart';
 import 'package:larpland/model/product.dart';
 import 'package:larpland/service/product.dart';
+import 'package:larpland/util/error_message.dart';
 
 class AddProductScreen extends StatefulWidget {
   final Product? product;
@@ -173,7 +174,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Error'),
-          content: Text(e.toString()),
+          content: Text(uiErrorMessage(e)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),

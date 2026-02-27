@@ -2,6 +2,7 @@
 import 'package:larpland/component/event_card.dart';
 import 'package:larpland/model/roleplay_event.dart';
 import 'package:larpland/service/roleplay_event.dart';
+import 'package:larpland/util/error_message.dart';
 import 'package:larpland/view/admin/event_register.dart';
 
 class EventScreen extends StatefulWidget {
@@ -72,7 +73,7 @@ class _EventScreenState extends State<EventScreen> {
         return;
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No se pudo borrar el evento: $e')),
+        SnackBar(content: Text('No se pudo borrar el evento: ${uiErrorMessage(e)}')),
       );
     }
   }

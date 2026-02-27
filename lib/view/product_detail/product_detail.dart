@@ -5,6 +5,7 @@ import 'package:larpland/model/product.dart';
 import 'package:larpland/model/user_review.dart';
 import 'package:larpland/service/product.dart';
 import 'package:larpland/service/user_review.dart';
+import 'package:larpland/util/error_message.dart';
 
 class ProductDetail extends StatefulWidget {
   final Product product;
@@ -333,7 +334,7 @@ class _ProductDetailState extends State<ProductDetail> {
         return;
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
+        SnackBar(content: Text(uiErrorMessage(e))),
       );
     } finally {
       if (mounted) {

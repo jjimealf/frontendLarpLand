@@ -5,6 +5,7 @@ import 'package:larpland/component/smart_network_image.dart';
 import 'package:larpland/model/product.dart';
 import 'package:larpland/provider/cart_provider.dart';
 import 'package:larpland/service/product.dart';
+import 'package:larpland/util/error_message.dart';
 import 'package:larpland/view/cart/cart.dart';
 import 'package:larpland/view/product_detail/product_detail.dart';
 import 'package:provider/provider.dart';
@@ -699,7 +700,9 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                             } catch (e) {
                                               ScaffoldMessenger.of(context)
                                                   .showSnackBar(
-                                                SnackBar(content: Text(e.toString())),
+                                                SnackBar(
+                                                  content: Text(uiErrorMessage(e)),
+                                                ),
                                               );
                                             }
                                           },

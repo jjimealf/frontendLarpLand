@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:larpland/component/smart_network_image.dart';
 import 'package:larpland/provider/cart_provider.dart';
+import 'package:larpland/util/error_message.dart';
 import 'package:larpland/view/cart/checkout.dart';
 import 'package:provider/provider.dart';
 
@@ -141,7 +142,7 @@ class CartScreen extends StatelessWidget {
                                                 ScaffoldMessenger.of(context)
                                                     .showSnackBar(
                                                   SnackBar(
-                                                    content: Text(e.toString()),
+                                                    content: Text(uiErrorMessage(e)),
                                                   ),
                                                 );
                                               }

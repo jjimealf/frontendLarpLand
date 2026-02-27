@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:larpland/model/roleplay_event.dart';
 import 'package:larpland/service/roleplay_event.dart';
+import 'package:larpland/util/error_message.dart';
 
 class AddEventScreen extends StatefulWidget {
   final RoleplayEvent? event;
@@ -193,8 +194,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
           title: const Text('Error'),
           content: Text(
             _isEditMode
-                ? 'No se pudo actualizar el evento: $e'
-                : 'No se pudo guardar el evento: $e',
+                ? 'No se pudo actualizar el evento: ${uiErrorMessage(e)}'
+                : 'No se pudo guardar el evento: ${uiErrorMessage(e)}',
           ),
           actions: [
             TextButton(
