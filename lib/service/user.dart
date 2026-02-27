@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 import 'package:larpland/model/user.dart';
+import 'package:larpland/service/app_error.dart';
 import 'package:larpland/service/auth_session.dart';
 import 'package:larpland/service/firebase_backend.dart';
 
@@ -29,15 +30,24 @@ Future<User> updateCurrentUserProfile({
   final trimmedName = name.trim();
   final trimmedEmail = email.trim();
   if (trimmedName.isEmpty) {
-    throw Exception('El nombre no puede estar vacio.');
+    throw const AppError(
+      code: 'validation.empty_name',
+      message: 'El nombre no puede estar vacio.',
+    );
   }
   if (trimmedEmail.isEmpty) {
-    throw Exception('El correo no puede estar vacio.');
+    throw const AppError(
+      code: 'validation.empty_email',
+      message: 'El correo no puede estar vacio.',
+    );
   }
 
   final firebaseUser = FirebaseBackend.auth.currentUser;
   if (firebaseUser == null) {
-    throw Exception('No hay una sesion activa.');
+    throw const AppError(
+      code: 'auth.no_active_session',
+      message: 'No hay una sesion activa.',
+    );
   }
 
   try {
@@ -50,7 +60,11 @@ Future<User> updateCurrentUserProfile({
     }
     await firebaseUser.reload();
   } on fb_auth.FirebaseAuthException catch (e) {
-    throw Exception(_firebaseAuthMessage(e));
+    throw AppError(
+      code: 'auth.${e.code}',
+      message: _firebaseAuthMessage(e),
+      cause: e,
+    );
   }
 
   try {
@@ -61,10 +75,12 @@ Future<User> updateCurrentUserProfile({
       'updated_at': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
   } on FirebaseException catch (e) {
-    throw Exception(
-      e.message == null || e.message!.trim().isEmpty
+    throw AppError(
+      code: 'firestore.${e.code}',
+      message: e.message == null || e.message!.trim().isEmpty
           ? 'No se pudo actualizar el perfil en Firestore (${e.code}).'
           : 'No se pudo actualizar el perfil en Firestore: ${e.message}',
+      cause: e,
     );
   }
 

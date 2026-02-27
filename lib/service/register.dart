@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 import 'package:larpland/model/user.dart';
+import 'package:larpland/service/app_error.dart';
 import 'package:larpland/service/firebase_backend.dart';
 
 Future<User> register(String name, String email, String password) async {
@@ -12,7 +13,10 @@ Future<User> register(String name, String email, String password) async {
     );
     final createdUser = credential.user;
     if (createdUser == null) {
-      throw Exception('No se pudo crear el usuario en Firebase Auth.');
+      throw const AppError(
+        code: 'auth.user_not_created',
+        message: 'No se pudo crear el usuario en Firebase Auth.',
+      );
     }
 
     final trimmedName = name.trim();
@@ -27,7 +31,11 @@ Future<User> register(String name, String email, String password) async {
     await FirebaseBackend.auth.signOut();
     return User.fromJson(profile);
   } on fb_auth.FirebaseAuthException catch (e) {
-    throw Exception(_firebaseAuthMessage(e));
+    throw AppError(
+      code: 'auth.${e.code}',
+      message: _firebaseAuthMessage(e),
+      cause: e,
+    );
   }
 }
 

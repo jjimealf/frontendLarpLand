@@ -38,7 +38,7 @@ class Login {
     final message = rawMessage is String ? rawMessage : rawMessage.toString();
 
     if (rol == null || userId == null) {
-      throw Exception('Login invalido');
+      throw const FormatException('Login invalido');
     }
 
     return Login(

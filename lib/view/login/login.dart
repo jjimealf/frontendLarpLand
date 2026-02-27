@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:larpland/service/app_error.dart';
 import 'package:larpland/service/login.dart';
 import 'package:larpland/util/error_message.dart';
 import 'package:larpland/view/admin/adminhome.dart';
@@ -49,7 +50,10 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           );
         } else {
-          throw Exception('Rol de usuario no valido.');
+          throw const AppError(
+            code: 'auth.invalid_role',
+            message: 'Rol de usuario no valido.',
+          );
         }
       } catch (e) {
         if (!mounted) return;

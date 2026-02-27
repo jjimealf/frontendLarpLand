@@ -2,8 +2,10 @@
 import 'package:larpland/component/smart_network_image.dart';
 import 'package:larpland/model/product.dart';
 import 'package:larpland/provider/cart_provider.dart';
+import 'package:larpland/service/app_error.dart';
 import 'package:larpland/service/order.dart';
 import 'package:larpland/service/product.dart';
+import 'package:larpland/util/error_message.dart';
 import 'package:provider/provider.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -333,9 +335,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       for (final item in cartItems) {
         final newStock = item.cantidad - item.cantidadCarrito;
         if (newStock < 0) {
-          throw Exception(
-            'Stock insuficiente para "${item.nombre}". '
-            'Disponible: ${item.cantidad}, en carrito: ${item.cantidadCarrito}',
+          throw AppError(
+            code: 'validation.insufficient_stock',
+            message:
+                'Stock insuficiente para "${item.nombre}". Disponible: ${item.cantidad}, en carrito: ${item.cantidadCarrito}',
           );
         }
         await updateProduct(item.id, stock: newStock);
@@ -373,14 +376,22 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       for (final entry in updatedStocks.entries) {
         try {
           await updateProduct(entry.key, stock: entry.value);
-        } catch (_) {
-          // Keep original error visible.
+        } catch (rollbackError, rollbackStackTrace) {
+          debugPrint(
+            'No se pudo revertir stock del producto ${entry.key}: '
+            '${uiErrorMessage(rollbackError)}',
+          );
+          debugPrintStack(stackTrace: rollbackStackTrace);
         }
       }
 
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No se pudo completar el pedido: $e')),
+        SnackBar(
+          content: Text(
+            'No se pudo completar el pedido: ${uiErrorMessage(e)}',
+          ),
+        ),
       );
       setState(() => _isSubmitting = false);
       return;

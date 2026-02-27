@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 import 'package:larpland/model/login.dart';
+import 'package:larpland/service/app_error.dart';
 import 'package:larpland/service/auth_session.dart';
 import 'package:larpland/service/firebase_backend.dart';
 
@@ -13,8 +14,8 @@ Future<Login> login(String email, String password) async {
     );
     final user = credential.user;
     if (user == null) {
-      throw fb_auth.FirebaseAuthException(
-        code: 'user-not-found',
+      throw const AppError(
+        code: 'auth.user_not_found',
         message: 'No se pudo recuperar el usuario autenticado.',
       );
     }
@@ -23,7 +24,10 @@ Future<Login> login(String email, String password) async {
     final rol = _asInt(profile['rol']) ?? 0;
     final userId = _asInt(profile['id']);
     if (userId == null) {
-      throw Exception('El perfil del usuario no contiene un id numerico.');
+      throw const AppError(
+        code: 'auth.profile_missing_user_id',
+        message: 'El perfil del usuario no contiene un id numerico.',
+      );
     }
 
     final idToken = await user.getIdToken();
@@ -43,7 +47,11 @@ Future<Login> login(String email, String password) async {
     );
     return result;
   } on fb_auth.FirebaseAuthException catch (e) {
-    throw Exception(_firebaseAuthMessage(e));
+    throw AppError(
+      code: 'auth.${e.code}',
+      message: _firebaseAuthMessage(e),
+      cause: e,
+    );
   }
 }
 

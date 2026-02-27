@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:larpland/model/order.dart';
 import 'package:larpland/model/product.dart';
+import 'package:larpland/service/app_error.dart';
 import 'package:larpland/service/firebase_backend.dart';
 
 CollectionReference<Map<String, dynamic>> get _ordersCollection =>
@@ -22,7 +23,10 @@ Future<int> createUserOrder({
 }) async {
   FirebaseBackend.ensureInitialized();
   if (cartItems.isEmpty) {
-    throw Exception('No hay productos para registrar en el pedido.');
+    throw const AppError(
+      code: 'validation.empty_cart',
+      message: 'No hay productos para registrar en el pedido.',
+    );
   }
 
   final orderId = await FirebaseBackend.nextNumericId('orders');

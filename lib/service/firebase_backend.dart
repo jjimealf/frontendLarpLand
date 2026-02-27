@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:larpland/service/app_error.dart';
 
 class FirebaseBackend {
   static FirebaseFirestore get firestore => FirebaseFirestore.instance;
@@ -25,8 +26,10 @@ class FirebaseBackend {
 
   static void ensureInitialized() {
     if (Firebase.apps.isEmpty) {
-      throw StateError(
-        'Firebase no esta inicializado. Configura firebase_options.dart y llama a Firebase.initializeApp() en main().',
+      throw const AppError(
+        code: 'firebase.not_initialized',
+        message:
+            'Firebase no esta inicializado. Configura firebase_options.dart y llama a Firebase.initializeApp() en main().',
       );
     }
   }
@@ -53,7 +56,10 @@ class FirebaseBackend {
     ensureInitialized();
     final query = await collection.where('id', isEqualTo: id).limit(1).get();
     if (query.docs.isEmpty) {
-      throw StateError('No se encontro el registro con id=$id');
+      throw AppError(
+        code: 'firestore.not_found',
+        message: 'No se encontro el registro con id=$id',
+      );
     }
     return query.docs.first;
   }
@@ -107,7 +113,11 @@ class FirebaseBackend {
       await users.doc(firebaseUser.uid).set(payload, SetOptions(merge: true));
       return normalizeMap(payload);
     } on FirebaseException catch (e) {
-      throw Exception(_firestoreErrorMessage(e));
+      throw AppError(
+        code: 'firestore.${e.code}',
+        message: _firestoreErrorMessage(e),
+        cause: e,
+      );
     }
   }
 

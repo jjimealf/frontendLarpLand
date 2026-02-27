@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:larpland/model/product.dart';
+import 'package:larpland/service/app_error.dart';
 import 'package:larpland/service/firebase_backend.dart';
 import 'package:path/path.dart' as p;
 
@@ -117,23 +118,34 @@ Future<String> _uploadProductImage(
   } on FirebaseException catch (e) {
     switch (e.code) {
       case 'object-not-found':
-        throw Exception(
-          'Firebase Storage no encontro el archivo tras subirlo. Revisa si Storage esta habilitado y si storageBucket en firebase_options.dart es correcto.',
+        throw AppError(
+          code: 'storage.object_not_found',
+          message:
+              'Firebase Storage no encontro el archivo tras subirlo. Revisa si Storage esta habilitado y si storageBucket en firebase_options.dart es correcto.',
+          cause: e,
         );
       case 'unauthorized':
       case 'permission-denied':
-        throw Exception(
-          'Firebase Storage denego permisos. Revisa las reglas de Storage.',
+        throw AppError(
+          code: 'storage.permission_denied',
+          message:
+              'Firebase Storage denego permisos. Revisa las reglas de Storage.',
+          cause: e,
         );
       case 'bucket-not-found':
-        throw Exception(
-          'El bucket de Firebase Storage no existe. Verifica storageBucket en firebase_options.dart.',
+        throw AppError(
+          code: 'storage.bucket_not_found',
+          message:
+              'El bucket de Firebase Storage no existe. Verifica storageBucket en firebase_options.dart.',
+          cause: e,
         );
       default:
-        throw Exception(
-          e.message == null || e.message!.trim().isEmpty
+        throw AppError(
+          code: 'storage.${e.code}',
+          message: e.message == null || e.message!.trim().isEmpty
               ? 'Error de Firebase Storage (${e.code}).'
               : 'Error de Firebase Storage (${e.code}): ${e.message}',
+          cause: e,
         );
     }
   }
@@ -158,7 +170,7 @@ Future<void> _tryDeleteStorageUrl(String url) async {
   try {
     final ref = FirebaseStorage.instance.refFromURL(url);
     await ref.delete();
-  } catch (_) {
+  } on FirebaseException {
     // Ignorar errores de limpieza para no bloquear la operacion principal.
   }
 }
