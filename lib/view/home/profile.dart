@@ -556,7 +556,7 @@ class _OrderRow extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '$date Â· ${order.totalItems} item(s) Â· ${order.totalAmount.toStringAsFixed(2)} â‚¬',
+                    '$date - ${order.totalItems} item(s) - ${order.totalAmount.toStringAsFixed(2)} EUR',
                     style: const TextStyle(
                       fontSize: 12,
                       color: Colors.black54,

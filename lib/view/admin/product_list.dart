@@ -158,7 +158,7 @@ class _ProductListState extends State<ProductList> {
                         onTap: () => _openProductDetail(product),
                         child: Card(
                           elevation: 0,
-                          color: Colors.white,
+                          color: const Color(0xFFFFFAF0),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
                             side: BorderSide(

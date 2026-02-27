@@ -192,7 +192,7 @@ class _AdminOrderCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
       elevation: 0,
-      color: Colors.white,
+      color: const Color(0xFFFFFAF0),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
         side: BorderSide(color: const Color(0xFF5C3F2D).withValues(alpha: 0.15)),
@@ -210,7 +210,7 @@ class _AdminOrderCard extends StatelessWidget {
             ),
           ),
           subtitle: Text(
-            'Usuario #${order.userId} Â· ${_formatDate(order.createdAt)} Â· ${order.totalAmount.toStringAsFixed(2)} EUR',
+            'Usuario #${order.userId} - ${_formatDate(order.createdAt)} - ${order.totalAmount.toStringAsFixed(2)} EUR',
             style: const TextStyle(fontSize: 12),
           ),
           leading: const Icon(Icons.receipt_long_outlined, color: Color(0xFF2C4432)),
@@ -416,7 +416,7 @@ class _OrdersFiltersCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
       elevation: 0,
-      color: Colors.white,
+      color: const Color(0xFFFFFAF0),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
         side: BorderSide(color: const Color(0xFF5C3F2D).withValues(alpha: 0.15)),

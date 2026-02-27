@@ -102,7 +102,7 @@ class MyApp extends StatelessWidget {
       cardTheme: CardThemeData(
         elevation: 0,
         surfaceTintColor: Colors.transparent,
-        color: panel,
+        color: const Color(0xFFFFFAF0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
           side: BorderSide(color: forest.withValues(alpha: 0.22)),

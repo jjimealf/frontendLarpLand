@@ -15,17 +15,17 @@ class EventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final surface = Theme.of(context).colorScheme.surface;
     final ink = Theme.of(context).colorScheme.onSurface;
+    const parchmentWhite = Color(0xFFFFFAF0);
 
     return Card(
       margin: margin,
       elevation: 0,
-      color: surface.withValues(alpha: 0.94),
+      color: parchmentWhite,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
         side: BorderSide(
-          color: const Color(0xFF5C3F2D).withValues(alpha: 0.22),
+          color: const Color(0xFF5C3F2D).withValues(alpha: 0.2),
         ),
       ),
       child: Padding(

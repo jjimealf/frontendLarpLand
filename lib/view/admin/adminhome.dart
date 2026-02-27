@@ -16,6 +16,12 @@ class AdminHome extends StatefulWidget {
 
 class _AdminHomeState extends State<AdminHome> {
   int selectedIndex = 0;
+  static const _sectionTitles = <String>[
+    'Gestion de usuarios',
+    'Inventario del gremio',
+    'Control de pedidos',
+    'Panel de eventos',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -29,20 +35,53 @@ class _AdminHomeState extends State<AdminHome> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        elevation: 0,
-        centerTitle: true,
-        backgroundColor: const Color(0xFF2C4432),
-        foregroundColor: Colors.white,
-        title: const Text(
-          'LarpLand Admin',
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
+        toolbarHeight: 78,
+        foregroundColor: const Color(0xFFF8F2DE),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF1E1411), Color(0xFF4A2F25)],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.25),
+                blurRadius: 16,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
         ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'LarpLand Admin',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 24,
+                color: Color(0xFFF8F2DE),
+                letterSpacing: 0.4,
+              ),
+            ),
+            Text(
+              _sectionTitles[selectedIndex],
+              style: const TextStyle(
+                fontSize: 12,
+                color: Color(0xFFE8D5AE),
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.logout),
+          icon: const Icon(Icons.logout_rounded),
           tooltip: 'Cerrar sesion',
+          style: IconButton.styleFrom(
+            backgroundColor: const Color(0xFF8C3C2F).withValues(alpha: 0.35),
+            foregroundColor: const Color(0xFFF8F2DE),
+          ),
           onPressed: () async {
             await AuthSession.signOut();
             if (!context.mounted) return;
@@ -55,7 +94,7 @@ class _AdminHomeState extends State<AdminHome> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFFF3EBD4), Color(0xFFE8DABC)],
+            colors: [Color(0xFFEFE4C8), Color(0xFFE7D9BA)],
           ),
         ),
         child: IndexedStack(
@@ -63,48 +102,68 @@ class _AdminHomeState extends State<AdminHome> {
           children: screens,
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFF2C4432),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 12,
-              offset: Offset(0, -2),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: const Color(0xFF251915).withValues(alpha: 0.94),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: const Color(0xFFC9953E).withValues(alpha: 0.25),
             ),
-          ],
-        ),
-        child: BottomNavigationBar(
-          currentIndex: selectedIndex,
-          onTap: (value) => setState(() => selectedIndex = value),
-          type: BottomNavigationBarType.fixed,
-          elevation: 0,
-          backgroundColor: const Color(0xFF2C4432),
-          selectedItemColor: const Color(0xFFD3BE8A),
-          unselectedItemColor: Colors.white70,
-          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.group_outlined),
-              activeIcon: Icon(Icons.group),
-              label: 'Usuarios',
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.3),
+                blurRadius: 22,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: NavigationBarTheme(
+            data: NavigationBarThemeData(
+              backgroundColor: Colors.transparent,
+              indicatorColor: const Color(0xFFC9953E).withValues(alpha: 0.24),
+              labelTextStyle: WidgetStateProperty.resolveWith((states) {
+                final selected = states.contains(WidgetState.selected);
+                return TextStyle(
+                  color: selected
+                      ? const Color(0xFFF8F2DE)
+                      : const Color(0xFFC9B893),
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                );
+              }),
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.inventory_2_outlined),
-              activeIcon: Icon(Icons.inventory_2),
-              label: 'Inventario',
+            child: NavigationBar(
+              backgroundColor: Colors.transparent,
+              selectedIndex: selectedIndex,
+              height: 72,
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+              onDestinationSelected: (value) =>
+                  setState(() => selectedIndex = value),
+              destinations: const [
+                NavigationDestination(
+                  icon: Icon(Icons.group_outlined, color: Color(0xFFC9B893)),
+                  selectedIcon: Icon(Icons.group, color: Color(0xFFF8F2DE)),
+                  label: 'Usuarios',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.inventory_2_outlined, color: Color(0xFFC9B893)),
+                  selectedIcon: Icon(Icons.inventory_2, color: Color(0xFFF8F2DE)),
+                  label: 'Inventario',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.receipt_long_outlined, color: Color(0xFFC9B893)),
+                  selectedIcon: Icon(Icons.receipt_long, color: Color(0xFFF8F2DE)),
+                  label: 'Pedidos',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.event_outlined, color: Color(0xFFC9B893)),
+                  selectedIcon: Icon(Icons.event, color: Color(0xFFF8F2DE)),
+                  label: 'Eventos',
+                ),
+              ],
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.receipt_long_outlined),
-              activeIcon: Icon(Icons.receipt_long),
-              label: 'Pedidos',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.event_outlined),
-              activeIcon: Icon(Icons.event),
-              label: 'Eventos',
-            ),
-          ],
+          ),
         ),
       ),
     );

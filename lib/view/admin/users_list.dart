@@ -43,7 +43,7 @@ class _UsersListState extends State<UsersList> {
               return Card(
                 margin: const EdgeInsets.only(bottom: 10),
                 elevation: 0,
-                color: Colors.white,
+                color: const Color(0xFFFFFAF0),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                   side: BorderSide(
