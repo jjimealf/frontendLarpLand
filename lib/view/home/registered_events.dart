@@ -40,7 +40,7 @@ class _RegisteredEventsScreenState extends State<RegisteredEventsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Cancelar inscripcion'),
-        content: Text('Â¿Quieres cancelar tu inscripcion en "${event.name}"?'),
+        content: Text('Quieres cancelar tu inscripcion en "${event.name}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),

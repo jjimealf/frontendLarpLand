@@ -684,7 +684,7 @@ class _PickupInfo extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: const Text(
-        'Recogida en tienda: recibirÃ¡s una confirmacion cuando tu pedido este listo.',
+        'Recogida en tienda: recibiras una confirmacion cuando tu pedido este listo.',
         style: TextStyle(
           color: Color(0xFF2C4432),
           fontWeight: FontWeight.w600,
