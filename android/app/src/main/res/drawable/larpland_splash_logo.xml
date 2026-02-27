@@ -6,38 +6,38 @@
     android:viewportHeight="120">
 
     <path
-        android:fillColor="#1D3557"
+        android:fillColor="#2C4432"
         android:pathData="M20,12h80a8,8 0 0 1 8,8v80a8,8 0 0 1 -8,8h-80a8,8 0 0 1 -8,-8v-80a8,8 0 0 1 8,-8z" />
 
     <path
         android:fillColor="#00000000"
         android:pathData="M20,12h80a8,8 0 0 1 8,8v80a8,8 0 0 1 -8,8h-80a8,8 0 0 1 -8,-8v-80a8,8 0 0 1 8,-8z"
-        android:strokeColor="#A8DADC"
+        android:strokeColor="#D3BE8A"
         android:strokeLineJoin="round"
         android:strokeWidth="4" />
 
     <!-- Monogram L -->
     <path
-        android:fillColor="#E9C46A"
+        android:fillColor="#C9953E"
         android:pathData="M38,32h10v44h20v10H38z" />
 
     <!-- Sword blade -->
     <path
-        android:fillColor="#E9C46A"
+        android:fillColor="#C9953E"
         android:pathData="M78,27l4,-6 4,6v42h-8z" />
 
     <!-- Crossguard -->
     <path
-        android:fillColor="#A8DADC"
+        android:fillColor="#8C3C2F"
         android:pathData="M70,46h24v6H70z" />
 
     <!-- Grip -->
     <path
-        android:fillColor="#E9C46A"
+        android:fillColor="#C9953E"
         android:pathData="M79,52h6v20h-6z" />
 
     <!-- Pommel -->
     <path
-        android:fillColor="#E9C46A"
+        android:fillColor="#C9953E"
         android:pathData="M82,77m-4,0a4,4 0 1,0 8,0a4,4 0 1,0 -8,0" />
 </vector>
