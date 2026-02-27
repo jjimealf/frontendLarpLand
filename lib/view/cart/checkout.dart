@@ -224,36 +224,36 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           const SizedBox(height: 10),
                           _CheckoutSection(
                             title: 'Pago',
-                            child: Column(
-                              children: [
-                                _PaymentMethodTile(
-                                  value: _PaymentMethod.card,
-                                  groupValue: _paymentMethod,
-                                  title: 'Tarjeta',
-                                  subtitle: 'Pago inmediato (simulado)',
-                                  icon: Icons.credit_card_outlined,
-                                  onChanged: (value) =>
-                                      setState(() => _paymentMethod = value),
-                                ),
-                                _PaymentMethodTile(
-                                  value: _PaymentMethod.bizum,
-                                  groupValue: _paymentMethod,
-                                  title: 'Bizum',
-                                  subtitle: 'Confirmacion instantanea (simulado)',
-                                  icon: Icons.phone_android_outlined,
-                                  onChanged: (value) =>
-                                      setState(() => _paymentMethod = value),
-                                ),
-                                _PaymentMethodTile(
-                                  value: _PaymentMethod.cashOnDelivery,
-                                  groupValue: _paymentMethod,
-                                  title: 'Contra reembolso',
-                                  subtitle: 'Pago al recibir el pedido',
-                                  icon: Icons.local_shipping_outlined,
-                                  onChanged: (value) =>
-                                      setState(() => _paymentMethod = value),
-                                ),
-                              ],
+                            child: RadioGroup<_PaymentMethod>(
+                              groupValue: _paymentMethod,
+                              onChanged: (value) {
+                                if (value == null) {
+                                  return;
+                                }
+                                setState(() => _paymentMethod = value);
+                              },
+                              child: Column(
+                                children: [
+                                  const _PaymentMethodTile(
+                                    value: _PaymentMethod.card,
+                                    title: 'Tarjeta',
+                                    subtitle: 'Pago inmediato (simulado)',
+                                    icon: Icons.credit_card_outlined,
+                                  ),
+                                  const _PaymentMethodTile(
+                                    value: _PaymentMethod.bizum,
+                                    title: 'Bizum',
+                                    subtitle: 'Confirmacion instantanea (simulado)',
+                                    icon: Icons.phone_android_outlined,
+                                  ),
+                                  const _PaymentMethodTile(
+                                    value: _PaymentMethod.cashOnDelivery,
+                                    title: 'Contra reembolso',
+                                    subtitle: 'Pago al recibir el pedido',
+                                    icon: Icons.local_shipping_outlined,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           const SizedBox(height: 10),
@@ -585,52 +585,51 @@ class _DeliverySelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final standardPrice = subtotal >= 80 ? 'Gratis' : '4.99 EUR';
-    return Column(
-      children: [
-        _DeliveryTile(
-          value: _DeliveryMethod.standard,
-          groupValue: value,
-          title: 'Envio estandar',
-          subtitle: 'Entrega 48-72h | $standardPrice',
-          icon: Icons.local_shipping_outlined,
-          onChanged: onChanged,
-        ),
-        _DeliveryTile(
-          value: _DeliveryMethod.express,
-          groupValue: value,
-          title: 'Envio express',
-          subtitle: 'Entrega 24h | 9.99 EUR',
-          icon: Icons.flash_on_outlined,
-          onChanged: onChanged,
-        ),
-        _DeliveryTile(
-          value: _DeliveryMethod.pickup,
-          groupValue: value,
-          title: 'Recogida en tienda',
-          subtitle: 'Sin coste de envio',
-          icon: Icons.storefront_outlined,
-          onChanged: onChanged,
-        ),
-      ],
+    return RadioGroup<_DeliveryMethod>(
+      groupValue: value,
+      onChanged: (selected) {
+        if (selected == null) {
+          return;
+        }
+        onChanged(selected);
+      },
+      child: Column(
+        children: [
+          _DeliveryTile(
+            value: _DeliveryMethod.standard,
+            title: 'Envio estandar',
+            subtitle: 'Entrega 48-72h | $standardPrice',
+            icon: Icons.local_shipping_outlined,
+          ),
+          const _DeliveryTile(
+            value: _DeliveryMethod.express,
+            title: 'Envio express',
+            subtitle: 'Entrega 24h | 9.99 EUR',
+            icon: Icons.flash_on_outlined,
+          ),
+          const _DeliveryTile(
+            value: _DeliveryMethod.pickup,
+            title: 'Recogida en tienda',
+            subtitle: 'Sin coste de envio',
+            icon: Icons.storefront_outlined,
+          ),
+        ],
+      ),
     );
   }
 }
 
 class _DeliveryTile extends StatelessWidget {
   final _DeliveryMethod value;
-  final _DeliveryMethod groupValue;
   final String title;
   final String subtitle;
   final IconData icon;
-  final ValueChanged<_DeliveryMethod> onChanged;
 
   const _DeliveryTile({
     required this.value,
-    required this.groupValue,
     required this.title,
     required this.subtitle,
     required this.icon,
-    required this.onChanged,
   });
 
   @override
@@ -639,10 +638,6 @@ class _DeliveryTile extends StatelessWidget {
       contentPadding: EdgeInsets.zero,
       dense: true,
       value: value,
-      groupValue: groupValue,
-      onChanged: (value) {
-        if (value != null) onChanged(value);
-      },
       secondary: Icon(icon, color: const Color(0xFF2C4432)),
       title: Text(title),
       subtitle: Text(subtitle),
@@ -652,19 +647,15 @@ class _DeliveryTile extends StatelessWidget {
 
 class _PaymentMethodTile extends StatelessWidget {
   final _PaymentMethod value;
-  final _PaymentMethod groupValue;
   final String title;
   final String subtitle;
   final IconData icon;
-  final ValueChanged<_PaymentMethod> onChanged;
 
   const _PaymentMethodTile({
     required this.value,
-    required this.groupValue,
     required this.title,
     required this.subtitle,
     required this.icon,
-    required this.onChanged,
   });
 
   @override
@@ -673,10 +664,6 @@ class _PaymentMethodTile extends StatelessWidget {
       contentPadding: EdgeInsets.zero,
       dense: true,
       value: value,
-      groupValue: groupValue,
-      onChanged: (value) {
-        if (value != null) onChanged(value);
-      },
       secondary: Icon(icon, color: const Color(0xFF2C4432)),
       title: Text(title),
       subtitle: Text(subtitle),
