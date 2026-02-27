@@ -253,7 +253,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ),
                                           SizedBox(height: 2),
                                           Text(
-                                            'Accede para continuar tu campana.',
+                                            'Accede para continuar tu campaña.',
                                             style: TextStyle(
                                               color: Color(0xFF5A4A41),
                                             ),
@@ -275,7 +275,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return 'Por favor, ingrese su correo electronico';
+                                      return 'Por favor, ingrese su correo electrónico';
                                     }
                                     return null;
                                   },
@@ -288,7 +288,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   autocorrect: false,
                                   enableSuggestions: false,
                                   decoration: _fieldDecoration(
-                                    label: 'Contrasena',
+                                    label: 'Contraseña',
                                     icon: Icons.lock_outline_rounded,
                                     suffixIcon: IconButton(
                                       onPressed: () {
@@ -305,7 +305,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return 'Por favor, ingrese su contrasena';
+                                      return 'Por favor, ingrese su contraseña';
                                     }
                                     return null;
                                   },
@@ -325,7 +325,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     const Text(
-                                      'No tienes una cuenta?',
+                                      '¿No tienes una cuenta?',
                                       style: TextStyle(color: Color(0xFF4B403A)),
                                     ),
                                     const SizedBox(width: 6),
@@ -338,7 +338,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                       ),
                                       child: const Text(
-                                        'Registrate',
+                                        'Regístrate',
                                         style: TextStyle(fontWeight: FontWeight.w700),
                                       ),
                                     ),
