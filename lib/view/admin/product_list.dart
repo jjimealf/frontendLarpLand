@@ -272,6 +272,7 @@ class _ProductListState extends State<ProductList> {
                           Expanded(
                             child: DropdownButtonFormField<_ProductStockFilter>(
                               initialValue: _stockFilter,
+                              isExpanded: true,
                               decoration: _filterDecoration('Stock'),
                               items: _ProductStockFilter.values
                                   .map(
@@ -296,6 +297,7 @@ class _ProductListState extends State<ProductList> {
                           Expanded(
                             child: DropdownButtonFormField<String>(
                               initialValue: activeCategory,
+                              isExpanded: true,
                               decoration: _filterDecoration('Categoria'),
                               items: categories
                                   .map(

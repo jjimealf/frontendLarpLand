@@ -469,6 +469,7 @@ class _OrdersFiltersCard extends StatelessWidget {
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     initialValue: statusFilter,
+                    isExpanded: true,
                     decoration: _dropdownDecoration('Estado'),
                     items: const [
                       DropdownMenuItem(value: 'all', child: Text('Todos')),
@@ -485,6 +486,7 @@ class _OrdersFiltersCard extends StatelessWidget {
                 Expanded(
                   child: DropdownButtonFormField<_DateFilter>(
                     initialValue: dateFilter,
+                    isExpanded: true,
                     decoration: _dropdownDecoration('Fecha'),
                     items: const [
                       DropdownMenuItem(value: _DateFilter.all, child: Text('Todo')),

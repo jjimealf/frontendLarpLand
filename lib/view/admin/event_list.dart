@@ -277,6 +277,7 @@ class _EventScreenState extends State<EventScreen> {
                           Expanded(
                             child: DropdownButtonFormField<_EventStatusFilter>(
                               initialValue: _statusFilter,
+                              isExpanded: true,
                               decoration: _filterDecoration('Estado'),
                               items: _EventStatusFilter.values
                                   .map(
@@ -301,6 +302,7 @@ class _EventScreenState extends State<EventScreen> {
                           Expanded(
                             child: DropdownButtonFormField<_EventDateFilter>(
                               initialValue: _dateFilter,
+                              isExpanded: true,
                               decoration: _filterDecoration('Fecha'),
                               items: _EventDateFilter.values
                                   .map(

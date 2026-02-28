@@ -368,6 +368,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                     initialValue: _categories.contains(_selectedCategory)
                                         ? _selectedCategory
                                         : 'Todas',
+                                    isExpanded: true,
                                     decoration: _filterDecoration('Categoria'),
                                     items: _categories
                                         .map(
@@ -388,6 +389,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                 Expanded(
                                   child: DropdownButtonFormField<_CatalogSort>(
                                     initialValue: _sort,
+                                    isExpanded: true,
                                     decoration: _filterDecoration('Ordenar por'),
                                     items: _CatalogSort.values
                                         .map(
